@@ -1,23 +1,19 @@
 "use client"
 
-import {
-  useAnchorWallet,
-  useConnection,
-  useWallet,
-} from "@solana/wallet-adapter-react"
+import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react"
 import {
   PublicKey,
-  Transaction,
   TransactionMessage,
   VersionedTransaction,
 } from "@solana/web3.js"
 import type { NextPage } from "next"
 import dynamic from "next/dynamic"
 import Head from "next/head"
-import Image from "next/image"
 import React from "react"
 import { AnchorProvider, Program } from "@coral-xyz/anchor"
 import { IDL } from "@/lib/types/game_core"
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 const WalletDisconnectButtonDynamic = dynamic(
   async () =>
@@ -32,6 +28,7 @@ const WalletMultiButtonDynamic = dynamic(
 
 const PROGRAM_ID = new PublicKey("9LqUvkM7zkVqpYypCRsuh5KitHbZZFrcfwkRVgirnnUf")
 
+const toastId = "test"
 const Home: NextPage = () => {
   const { connection } = useConnection()
   const wallet = useAnchorWallet()
@@ -55,50 +52,64 @@ const Home: NextPage = () => {
             margin: "20px 0",
           }}
           onClick={async () => {
-            if (!wallet || !wallet.signTransaction)
-              throw new Error("Please, connect your wallet first.")
-
-            const program = new Program(
-              IDL,
-              PROGRAM_ID,
-              new AnchorProvider(connection, wallet, {})
-            )
-
-            const palaceAddress = PublicKey.findProgramAddressSync(
-              [wallet.publicKey?.toBytes()],
-              PROGRAM_ID
-            )[0]
-
-            const ix = await program.methods
-              .initialize()
-              .accounts({
-                palace: palaceAddress,
-              })
-              .instruction()
-
-            const { blockhash, lastValidBlockHeight } = await connection
-              .getLatestBlockhash()
-              .then((res) => res)
-
-            const messageV0 = new TransactionMessage({
-              payerKey: wallet.publicKey,
-              recentBlockhash: blockhash,
-              instructions: [ix],
-            }).compileToV0Message()
-
-            const tx = new VersionedTransaction(messageV0)
-            const signed = await wallet.signTransaction(tx)
-
-            const txid = await connection.sendTransaction(signed)
-
-            const confirmed = await connection.confirmTransaction({
-              signature: txid,
-              blockhash,
-              lastValidBlockHeight,
+            toast("Initializing...", {
+              position: toast.POSITION.TOP_CENTER,
+              toastId,
             })
 
-            if (confirmed.value.err) {
-              throw new Error(confirmed.value.err.toString())
+            try {
+              if (!wallet || !wallet.signTransaction)
+                throw new Error("Please, connect your wallet first.")
+
+              const program = new Program(
+                IDL,
+                PROGRAM_ID,
+                new AnchorProvider(connection, wallet, {})
+              )
+
+              const palaceAddress = PublicKey.findProgramAddressSync(
+                [wallet.publicKey?.toBytes()],
+                PROGRAM_ID
+              )[0]
+
+              const ix = await program.methods
+                .initialize()
+                .accounts({
+                  palace: palaceAddress,
+                })
+                .instruction()
+
+              const { blockhash, lastValidBlockHeight } = await connection
+                .getLatestBlockhash()
+                .then((res) => res)
+
+              const messageV0 = new TransactionMessage({
+                payerKey: wallet.publicKey,
+                recentBlockhash: blockhash,
+                instructions: [ix],
+              }).compileToV0Message()
+
+              const tx = new VersionedTransaction(messageV0)
+
+              toast.update(toastId, { render: "Please, sign the transaction" })
+              const signed = await wallet.signTransaction(tx)
+
+              const txid = await connection.sendTransaction(signed)
+
+              const confirmed = await connection.confirmTransaction({
+                signature: txid,
+                blockhash,
+                lastValidBlockHeight,
+              })
+
+              if (confirmed.value.err) {
+                throw new Error(confirmed.value.err.toString())
+              }
+
+              toast.update(toastId, { render: "Success!", type: "success" })
+            } catch (e) {
+              console.error(e)
+              toast.update(toastId, { render: e + "", type: "error" })
             }
           }}
         >
@@ -106,6 +117,8 @@ const Home: NextPage = () => {
         </button>
 
         <h3>your coins: 0</h3>
+
+        <ToastContainer />
       </main>
     </>
   )
