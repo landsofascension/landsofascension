@@ -1,9 +1,10 @@
 "use client"
+
 import {
-  createInitializeInstruction,
-  createUpgradePalaceInstruction,
-} from "@/lib/generated"
-import { useConnection, useWallet } from "@solana/wallet-adapter-react"
+  useAnchorWallet,
+  useConnection,
+  useWallet,
+} from "@solana/wallet-adapter-react"
 import {
   PublicKey,
   Transaction,
@@ -15,6 +16,8 @@ import dynamic from "next/dynamic"
 import Head from "next/head"
 import Image from "next/image"
 import React from "react"
+import { AnchorProvider, Program } from "@coral-xyz/anchor"
+import { IDL } from "@/lib/types/game_core"
 
 const WalletDisconnectButtonDynamic = dynamic(
   async () =>
@@ -27,11 +30,12 @@ const WalletMultiButtonDynamic = dynamic(
   { ssr: false }
 )
 
+const PROGRAM_ID = new PublicKey("9LqUvkM7zkVqpYypCRsuh5KitHbZZFrcfwkRVgirnnUf")
+
 const Home: NextPage = () => {
   const { connection } = useConnection()
-  const { publicKey, signTransaction } = useWallet()
+  const wallet = useAnchorWallet()
 
-  console.log(publicKey)
   return (
     <>
       <Head>
@@ -51,31 +55,39 @@ const Home: NextPage = () => {
             margin: "20px 0",
           }}
           onClick={async () => {
-            if (!publicKey || !signTransaction)
+            if (!wallet || !wallet.signTransaction)
               throw new Error("Please, connect your wallet first.")
 
+            const program = new Program(
+              IDL,
+              PROGRAM_ID,
+              new AnchorProvider(connection, wallet, {})
+            )
+
             const palaceAddress = PublicKey.findProgramAddressSync(
-              [publicKey?.toBytes()],
-              new PublicKey("9LqUvkM7zkVqpYypCRsuh5KitHbZZFrcfwkRVgirnnUf")
+              [wallet.publicKey?.toBytes()],
+              PROGRAM_ID
             )[0]
 
-            const ix = createInitializeInstruction({
-              palace: palaceAddress,
-              signer: publicKey,
-            })
+            const ix = await program.methods
+              .initialize()
+              .accounts({
+                palace: palaceAddress,
+              })
+              .instruction()
 
             const { blockhash, lastValidBlockHeight } = await connection
               .getLatestBlockhash()
               .then((res) => res)
 
             const messageV0 = new TransactionMessage({
-              payerKey: publicKey,
+              payerKey: wallet.publicKey,
               recentBlockhash: blockhash,
               instructions: [ix],
             }).compileToV0Message()
 
             const tx = new VersionedTransaction(messageV0)
-            const signed = await signTransaction(tx)
+            const signed = await wallet.signTransaction(tx)
 
             const txid = await connection.sendTransaction(signed)
 
@@ -92,6 +104,8 @@ const Home: NextPage = () => {
         >
           initialize
         </button>
+
+        <h3>your coins: 0</h3>
       </main>
     </>
   )
