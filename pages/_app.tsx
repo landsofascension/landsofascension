@@ -15,10 +15,9 @@ require("@solana/wallet-adapter-react-ui/styles.css")
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
   // Can be set to 'devnet', 'testnet', or 'mainnet-beta'
-  const network = WalletAdapterNetwork.Devnet
 
   // You can also provide a custom RPC endpoint
-  const endpoint = useMemo(() => clusterApiUrl(network), [network])
+  const endpoint = "http://localhost:8899"
 
   const wallets = useMemo(
     () => [
@@ -37,7 +36,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
       new UnsafeBurnerWalletAdapter(),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [network]
+    [endpoint]
   )
 
   return (

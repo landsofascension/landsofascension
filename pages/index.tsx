@@ -1,4 +1,15 @@
 "use client"
+import {
+  createInitializeInstruction,
+  createUpgradePalaceInstruction,
+} from "@/lib/generated"
+import { useConnection, useWallet } from "@solana/wallet-adapter-react"
+import {
+  PublicKey,
+  Transaction,
+  TransactionMessage,
+  VersionedTransaction,
+} from "@solana/web3.js"
 import type { NextPage } from "next"
 import dynamic from "next/dynamic"
 import Head from "next/head"
@@ -17,6 +28,10 @@ const WalletMultiButtonDynamic = dynamic(
 )
 
 const Home: NextPage = () => {
+  const { connection } = useConnection()
+  const { publicKey, signTransaction } = useWallet()
+
+  console.log(publicKey)
   return (
     <>
       <Head>
@@ -31,7 +46,52 @@ const Home: NextPage = () => {
           <WalletDisconnectButtonDynamic />
         </div>
 
-        <button>initialize palace</button>
+        <button
+          style={{
+            margin: "20px 0",
+          }}
+          onClick={async () => {
+            if (!publicKey || !signTransaction)
+              throw new Error("Please, connect your wallet first.")
+
+            const palaceAddress = PublicKey.findProgramAddressSync(
+              [publicKey?.toBytes()],
+              new PublicKey("9LqUvkM7zkVqpYypCRsuh5KitHbZZFrcfwkRVgirnnUf")
+            )[0]
+
+            const ix = createInitializeInstruction({
+              palace: palaceAddress,
+              signer: publicKey,
+            })
+
+            const { blockhash, lastValidBlockHeight } = await connection
+              .getLatestBlockhash()
+              .then((res) => res)
+
+            const messageV0 = new TransactionMessage({
+              payerKey: publicKey,
+              recentBlockhash: blockhash,
+              instructions: [ix],
+            }).compileToV0Message()
+
+            const tx = new VersionedTransaction(messageV0)
+            const signed = await signTransaction(tx)
+
+            const txid = await connection.sendTransaction(signed)
+
+            const confirmed = await connection.confirmTransaction({
+              signature: txid,
+              blockhash,
+              lastValidBlockHeight,
+            })
+
+            if (confirmed.value.err) {
+              throw new Error(confirmed.value.err.toString())
+            }
+          }}
+        >
+          initialize
+        </button>
       </main>
     </>
   )
