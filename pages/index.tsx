@@ -9,11 +9,15 @@ import {
 import type { NextPage } from "next"
 import dynamic from "next/dynamic"
 import Head from "next/head"
-import React from "react"
-import { AnchorProvider, Program } from "@coral-xyz/anchor"
+import React, { useCallback, useEffect, useState } from "react"
+import { AnchorProvider, BN, Program } from "@coral-xyz/anchor"
 import { IDL } from "@/lib/types/game_core"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
+import {
+  createAssociatedTokenAccountInstruction,
+  getAssociatedTokenAddress,
+} from "@solana/spl-token"
 
 const WalletDisconnectButtonDynamic = dynamic(
   async () =>
@@ -29,9 +33,32 @@ const WalletMultiButtonDynamic = dynamic(
 const PROGRAM_ID = new PublicKey("9LqUvkM7zkVqpYypCRsuh5KitHbZZFrcfwkRVgirnnUf")
 
 const toastId = "test"
+
+const mint = PublicKey.findProgramAddressSync(
+  [Buffer.from("mint")],
+  PROGRAM_ID
+)[0]
+
 const Home: NextPage = () => {
   const { connection } = useConnection()
   const wallet = useAnchorWallet()
+  const [balance, setBalance] = useState(0)
+
+  const fetchUserTokenBalance = useCallback(async () => {
+    if (wallet?.publicKey) {
+      const ata = await getAssociatedTokenAddress(mint, wallet?.publicKey)
+      const balance = Number(
+        (await connection.getTokenAccountBalance(ata)).value.amount
+      )
+
+      console.log(balance)
+      setBalance(balance)
+    }
+  }, [wallet?.publicKey])
+
+  useEffect(() => {
+    fetchUserTokenBalance()
+  }, [fetchUserTokenBalance])
 
   return (
     <>
@@ -115,8 +142,95 @@ const Home: NextPage = () => {
         >
           initialize
         </button>
+        <button
+          style={{
+            margin: "20px 0",
+          }}
+          onClick={async () => {
+            toast("Initializing...", {
+              position: toast.POSITION.TOP_CENTER,
+              toastId,
+            })
 
-        <h3>your coins: 0</h3>
+            try {
+              if (!wallet || !wallet.signTransaction)
+                throw new Error("Please, connect your wallet first.")
+
+              const program = new Program(
+                IDL,
+                PROGRAM_ID,
+                new AnchorProvider(connection, wallet, {})
+              )
+
+              const destination = wallet.publicKey
+              const ata = await getAssociatedTokenAddress(mint, destination)
+              const account = await program.provider.connection.getAccountInfo(
+                ata
+              )
+
+              const ixs = []
+              // create associated token account if it doesn't exist
+              if (!account) {
+                ixs.push(
+                  createAssociatedTokenAccountInstruction(
+                    wallet.publicKey,
+                    ata,
+                    destination,
+                    mint
+                  )
+                )
+              }
+
+              ixs.push(
+                await program.methods
+                  .mintTokens(new BN(1))
+                  .accounts({
+                    mint,
+                    destinationAta: ata,
+                  })
+                  .instruction()
+              )
+
+              const { blockhash, lastValidBlockHeight } = await connection
+                .getLatestBlockhash()
+                .then((res) => res)
+
+              const message = new TransactionMessage({
+                instructions: ixs,
+                payerKey: wallet.publicKey,
+                recentBlockhash: blockhash,
+              }).compileToV0Message()
+
+              const tx = new VersionedTransaction(message)
+
+              toast.update(toastId, { render: "Please, sign the transaction" })
+              const signed = await wallet.signTransaction(tx)
+
+              const txid = await connection.sendTransaction(signed)
+
+              const confirmed = await connection.confirmTransaction({
+                signature: txid,
+                blockhash,
+                lastValidBlockHeight,
+              })
+
+              if (confirmed.value.err) {
+                throw new Error(confirmed.value.err.toString())
+              }
+
+              toast.update(toastId, { render: "Success!", type: "success" })
+            } catch (e) {
+              console.error(e)
+              toast.update(toastId, { render: e + "", type: "error" })
+            } finally {
+              fetchUserTokenBalance()
+            }
+          }}
+        >
+          collect tokens
+        </button>
+
+        <h3>your coins: {balance}</h3>
 
         <ToastContainer />
       </main>
