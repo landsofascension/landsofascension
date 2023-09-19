@@ -12,6 +12,11 @@ export type GameCore = {
           "pda": {
             "seeds": [
               {
+                "kind": "const",
+                "type": "string",
+                "value": "palace"
+              },
+              {
                 "kind": "account",
                 "type": "publicKey",
                 "path": "signer"
@@ -42,6 +47,11 @@ export type GameCore = {
           "pda": {
             "seeds": [
               {
+                "kind": "const",
+                "type": "string",
+                "value": "palace"
+              },
+              {
                 "kind": "account",
                 "type": "publicKey",
                 "path": "signer"
@@ -63,17 +73,61 @@ export type GameCore = {
       "args": []
     },
     {
-      "name": "mintTokens",
+      "name": "createTokenMint",
       "accounts": [
         {
-          "name": "authority",
+          "name": "signer",
           "isMut": true,
           "isSigner": true
         },
         {
           "name": "mint",
           "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
           "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "mintTokens",
+      "accounts": [
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "mint"
+              }
+            ]
+          }
         },
         {
           "name": "destinationAta",
@@ -124,6 +178,11 @@ export const IDL: GameCore = {
           "pda": {
             "seeds": [
               {
+                "kind": "const",
+                "type": "string",
+                "value": "palace"
+              },
+              {
                 "kind": "account",
                 "type": "publicKey",
                 "path": "signer"
@@ -154,6 +213,11 @@ export const IDL: GameCore = {
           "pda": {
             "seeds": [
               {
+                "kind": "const",
+                "type": "string",
+                "value": "palace"
+              },
+              {
                 "kind": "account",
                 "type": "publicKey",
                 "path": "signer"
@@ -175,17 +239,61 @@ export const IDL: GameCore = {
       "args": []
     },
     {
-      "name": "mintTokens",
+      "name": "createTokenMint",
       "accounts": [
         {
-          "name": "authority",
+          "name": "signer",
           "isMut": true,
           "isSigner": true
         },
         {
           "name": "mint",
           "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
           "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "mintTokens",
+      "accounts": [
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "mint"
+              }
+            ]
+          }
         },
         {
           "name": "destinationAta",
