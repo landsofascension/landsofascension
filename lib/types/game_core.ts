@@ -135,17 +135,31 @@ export type GameCore = {
           "isSigner": false
         },
         {
+          "name": "palace",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "palace"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
         }
       ],
-      "args": [
-        {
-          "name": "amount",
-          "type": "u64"
-        }
-      ]
+      "args": []
     }
   ],
   "accounts": [
@@ -157,6 +171,10 @@ export type GameCore = {
           {
             "name": "level",
             "type": "i8"
+          },
+          {
+            "name": "lastMintTimestamp",
+            "type": "i64"
           }
         ]
       }
@@ -301,17 +319,31 @@ export const IDL: GameCore = {
           "isSigner": false
         },
         {
+          "name": "palace",
+          "isMut": true,
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "palace"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
         }
       ],
-      "args": [
-        {
-          "name": "amount",
-          "type": "u64"
-        }
-      ]
+      "args": []
     }
   ],
   "accounts": [
@@ -323,6 +355,10 @@ export const IDL: GameCore = {
           {
             "name": "level",
             "type": "i8"
+          },
+          {
+            "name": "lastMintTimestamp",
+            "type": "i64"
           }
         ]
       }

@@ -95,7 +95,7 @@ const Home: NextPage = () => {
               )
 
               const palaceAddress = PublicKey.findProgramAddressSync(
-                [wallet.publicKey?.toBytes()],
+                [Buffer.from("palace"), wallet.publicKey.toBytes()],
                 PROGRAM_ID
               )[0]
 
@@ -181,12 +181,18 @@ const Home: NextPage = () => {
                 )
               }
 
+              const palaceAddress = PublicKey.findProgramAddressSync(
+                [Buffer.from("palace"), wallet.publicKey.toBytes()],
+                PROGRAM_ID
+              )[0]
+
               ixs.push(
                 await program.methods
-                  .mintTokens(new BN(1))
+                  .mintTokens()
                   .accounts({
                     mint,
                     destinationAta: ata,
+                    palace: palaceAddress,
                   })
                   .instruction()
               )
