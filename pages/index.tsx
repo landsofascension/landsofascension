@@ -10,7 +10,7 @@ import type { NextPage } from "next"
 import dynamic from "next/dynamic"
 import Head from "next/head"
 import React, { useCallback, useEffect, useState } from "react"
-import { AnchorProvider, BN, Program } from "@coral-xyz/anchor"
+import { AnchorProvider, BN, IdlAccounts, Program } from "@coral-xyz/anchor"
 import { IDL } from "@/lib/types/game_core"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
@@ -39,26 +39,59 @@ const mint = PublicKey.findProgramAddressSync(
   PROGRAM_ID
 )[0]
 
+export type Palace = IdlAccounts<typeof IDL>["palace"]
+
 const Home: NextPage = () => {
   const { connection } = useConnection()
   const wallet = useAnchorWallet()
   const [balance, setBalance] = useState(0)
+  const [palace, setPalace] = useState<Palace | null>(null)
 
   const fetchUserTokenBalance = useCallback(async () => {
     if (wallet?.publicKey) {
-      const ata = await getAssociatedTokenAddress(mint, wallet?.publicKey)
-      const balance = Number(
-        (await connection.getTokenAccountBalance(ata)).value.amount
-      )
+      try {
+        const ata = await getAssociatedTokenAddress(mint, wallet?.publicKey)
+        const balance = Number(
+          (await connection.getTokenAccountBalance(ata)).value.amount
+        )
 
-      console.log(balance)
-      setBalance(balance)
+        console.log(balance)
+        setBalance(balance)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+  }, [wallet?.publicKey])
+
+  const fetchUserPalace = useCallback(async () => {
+    if (wallet?.publicKey) {
+      try {
+        const program = new Program(
+          IDL,
+          PROGRAM_ID,
+          new AnchorProvider(connection, wallet, {})
+        )
+
+        const palaceAddress = PublicKey.findProgramAddressSync(
+          [Buffer.from("palace"), wallet.publicKey.toBytes()],
+          PROGRAM_ID
+        )[0]
+
+        const palace = await program.account.palace.fetch(palaceAddress)
+        setPalace(palace)
+      } catch (e) {
+        console.error(e)
+      }
     }
   }, [wallet?.publicKey])
 
   useEffect(() => {
     fetchUserTokenBalance()
   }, [fetchUserTokenBalance])
+
+  useEffect(() => {
+    fetchUserPalace()
+  }, [fetchUserPalace])
 
   return (
     <>
@@ -137,6 +170,8 @@ const Home: NextPage = () => {
             } catch (e) {
               console.error(e)
               toast.update(toastId, { render: e + "", type: "error" })
+            } finally {
+              fetchUserPalace()
             }
           }}
         >
@@ -155,6 +190,9 @@ const Home: NextPage = () => {
             try {
               if (!wallet || !wallet.signTransaction)
                 throw new Error("Please, connect your wallet first.")
+
+              if (!palace)
+                throw new Error("Please, initialize your palace first.")
 
               const program = new Program(
                 IDL,
@@ -230,13 +268,99 @@ const Home: NextPage = () => {
               toast.update(toastId, { render: e + "", type: "error" })
             } finally {
               fetchUserTokenBalance()
+              fetchUserPalace()
             }
           }}
         >
           collect tokens
         </button>
 
-        <h3>your coins: {balance}</h3>
+        <button
+          style={{
+            margin: "20px 0",
+          }}
+          onClick={async () => {
+            toast("Initializing...", {
+              position: toast.POSITION.TOP_CENTER,
+              toastId,
+            })
+
+            try {
+              if (!wallet || !wallet.signTransaction)
+                throw new Error("Please, connect your wallet first.")
+
+              if (!balance) throw new Error("You don't have any coins")
+
+              const program = new Program(
+                IDL,
+                PROGRAM_ID,
+                new AnchorProvider(connection, wallet, {})
+              )
+
+              const ata = await getAssociatedTokenAddress(
+                mint,
+                wallet.publicKey
+              )
+
+              const palaceAddress = PublicKey.findProgramAddressSync(
+                [Buffer.from("palace"), wallet.publicKey.toBytes()],
+                PROGRAM_ID
+              )[0]
+
+              const ixs = []
+              ixs.push(
+                await program.methods
+                  .upgradePalace()
+                  .accounts({
+                    mint,
+                    fromAta: ata,
+                    palace: palaceAddress,
+                  })
+                  .instruction()
+              )
+
+              const { blockhash, lastValidBlockHeight } = await connection
+                .getLatestBlockhash()
+                .then((res) => res)
+
+              const message = new TransactionMessage({
+                instructions: ixs,
+                payerKey: wallet.publicKey,
+                recentBlockhash: blockhash,
+              }).compileToV0Message()
+
+              const tx = new VersionedTransaction(message)
+
+              toast.update(toastId, { render: "Please, sign the transaction" })
+              const signed = await wallet.signTransaction(tx)
+
+              const txid = await connection.sendTransaction(signed)
+
+              const confirmed = await connection.confirmTransaction({
+                signature: txid,
+                blockhash,
+                lastValidBlockHeight,
+              })
+
+              if (confirmed.value.err) {
+                throw new Error(confirmed.value.err.toString())
+              }
+
+              toast.update(toastId, { render: "Success!", type: "success" })
+            } catch (e) {
+              console.error(e)
+              toast.update(toastId, { render: e + "", type: "error" })
+            } finally {
+              fetchUserTokenBalance()
+              fetchUserPalace()
+            }
+          }}
+        >
+          upgrade palace
+        </button>
+
+        <h3>Your coins: {balance}</h3>
+        <h3>Palace level: {palace?.level}</h3>
 
         <ToastContainer />
       </main>
