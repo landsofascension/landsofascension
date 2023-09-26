@@ -1,23 +1,20 @@
 "use client"
 
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react"
-import {
-  PublicKey,
-  TransactionMessage,
-  VersionedTransaction,
-} from "@solana/web3.js"
+import { PublicKey } from "@solana/web3.js"
 import type { NextPage } from "next"
 import dynamic from "next/dynamic"
 import Head from "next/head"
 import React, { useCallback, useEffect, useState } from "react"
-import { AnchorProvider, BN, IdlAccounts, Program } from "@coral-xyz/anchor"
-import { IDL } from "@/lib/types/game_core"
+import { AnchorProvider, IdlAccounts, Program } from "@coral-xyz/anchor"
+import { GameCore, IDL } from "@/lib/types/game_core"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import {
   createAssociatedTokenAccountInstruction,
   getAssociatedTokenAddress,
 } from "@solana/spl-token"
+import { signAndSendTransactionInstructions } from "@/utils/transactions"
 
 const WalletDisconnectButtonDynamic = dynamic(
   async () =>
@@ -39,13 +36,16 @@ const mint = PublicKey.findProgramAddressSync(
   PROGRAM_ID
 )[0]
 
-export type Palace = IdlAccounts<typeof IDL>["palace"]
+export type Palace = IdlAccounts<typeof IDL>["playerPalace"]
+export type Player = IdlAccounts<typeof IDL>["player"]
 
 const Home: NextPage = () => {
   const { connection } = useConnection()
+  const [program, setProgram] = useState<Program<GameCore> | null>(null)
   const wallet = useAnchorWallet()
   const [balance, setBalance] = useState(0)
   const [palace, setPalace] = useState<Palace | null>(null)
+  const [player, setPlayer] = useState<Player | null>(null)
 
   const fetchUserTokenBalance = useCallback(async () => {
     if (wallet?.publicKey) {
@@ -77,8 +77,30 @@ const Home: NextPage = () => {
           PROGRAM_ID
         )[0]
 
-        const palace = await program.account.palace.fetch(palaceAddress)
+        const palace = await program.account.playerPalace.fetch(palaceAddress)
         setPalace(palace)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+  }, [wallet?.publicKey])
+
+  const fetchPlayerAccount = useCallback(async () => {
+    if (wallet?.publicKey) {
+      try {
+        const program = new Program(
+          IDL,
+          PROGRAM_ID,
+          new AnchorProvider(connection, wallet, {})
+        )
+
+        const playerAddress = PublicKey.findProgramAddressSync(
+          [Buffer.from("player"), wallet.publicKey.toBytes()],
+          PROGRAM_ID
+        )[0]
+
+        const player = await program.account.player.fetch(playerAddress)
+        setPlayer(player)
       } catch (e) {
         console.error(e)
       }
@@ -92,6 +114,22 @@ const Home: NextPage = () => {
   useEffect(() => {
     fetchUserPalace()
   }, [fetchUserPalace])
+
+  useEffect(() => {
+    fetchPlayerAccount()
+  }, [fetchPlayerAccount])
+
+  useEffect(() => {
+    if (wallet && connection) {
+      const program = new Program(
+        IDL,
+        PROGRAM_ID,
+        new AnchorProvider(connection, wallet, {})
+      )
+
+      setProgram(program)
+    }
+  }, [wallet])
 
   return (
     <>
@@ -112,20 +150,9 @@ const Home: NextPage = () => {
             margin: "20px 0",
           }}
           onClick={async () => {
-            toast("Initializing...", {
-              position: toast.POSITION.TOP_CENTER,
-              toastId,
-            })
-
             try {
-              if (!wallet || !wallet.signTransaction)
+              if (!wallet || !wallet.signTransaction || !program)
                 throw new Error("Please, connect your wallet first.")
-
-              const program = new Program(
-                IDL,
-                PROGRAM_ID,
-                new AnchorProvider(connection, wallet, {})
-              )
 
               const palaceAddress = PublicKey.findProgramAddressSync(
                 [Buffer.from("palace"), wallet.publicKey.toBytes()],
@@ -139,37 +166,9 @@ const Home: NextPage = () => {
                 })
                 .instruction()
 
-              const { blockhash, lastValidBlockHeight } = await connection
-                .getLatestBlockhash()
-                .then((res) => res)
-
-              const messageV0 = new TransactionMessage({
-                payerKey: wallet.publicKey,
-                recentBlockhash: blockhash,
-                instructions: [ix],
-              }).compileToV0Message()
-
-              const tx = new VersionedTransaction(messageV0)
-
-              toast.update(toastId, { render: "Please, sign the transaction" })
-              const signed = await wallet.signTransaction(tx)
-
-              const txid = await connection.sendTransaction(signed)
-
-              const confirmed = await connection.confirmTransaction({
-                signature: txid,
-                blockhash,
-                lastValidBlockHeight,
-              })
-
-              if (confirmed.value.err) {
-                throw new Error(confirmed.value.err.toString())
-              }
-
-              toast.update(toastId, { render: "Success!", type: "success" })
+              await signAndSendTransactionInstructions(connection, wallet, [ix])
             } catch (e) {
               console.error(e)
-              toast.update(toastId, { render: e + "", type: "error" })
             } finally {
               fetchUserPalace()
             }
@@ -182,23 +181,12 @@ const Home: NextPage = () => {
             margin: "20px 0",
           }}
           onClick={async () => {
-            toast("Initializing...", {
-              position: toast.POSITION.TOP_CENTER,
-              toastId,
-            })
-
             try {
-              if (!wallet || !wallet.signTransaction)
+              if (!wallet || !wallet.signTransaction || !program)
                 throw new Error("Please, connect your wallet first.")
 
               if (!palace)
                 throw new Error("Please, initialize your palace first.")
-
-              const program = new Program(
-                IDL,
-                PROGRAM_ID,
-                new AnchorProvider(connection, wallet, {})
-              )
 
               const destination = wallet.publicKey
               const ata = await getAssociatedTokenAddress(mint, destination)
@@ -226,7 +214,7 @@ const Home: NextPage = () => {
 
               ixs.push(
                 await program.methods
-                  .mintTokens()
+                  .collectTokens()
                   .accounts({
                     mint,
                     destinationAta: ata,
@@ -235,37 +223,9 @@ const Home: NextPage = () => {
                   .instruction()
               )
 
-              const { blockhash, lastValidBlockHeight } = await connection
-                .getLatestBlockhash()
-                .then((res) => res)
-
-              const message = new TransactionMessage({
-                instructions: ixs,
-                payerKey: wallet.publicKey,
-                recentBlockhash: blockhash,
-              }).compileToV0Message()
-
-              const tx = new VersionedTransaction(message)
-
-              toast.update(toastId, { render: "Please, sign the transaction" })
-              const signed = await wallet.signTransaction(tx)
-
-              const txid = await connection.sendTransaction(signed)
-
-              const confirmed = await connection.confirmTransaction({
-                signature: txid,
-                blockhash,
-                lastValidBlockHeight,
-              })
-
-              if (confirmed.value.err) {
-                throw new Error(confirmed.value.err.toString())
-              }
-
-              toast.update(toastId, { render: "Success!", type: "success" })
+              await signAndSendTransactionInstructions(connection, wallet, ixs)
             } catch (e) {
               console.error(e)
-              toast.update(toastId, { render: e + "", type: "error" })
             } finally {
               fetchUserTokenBalance()
               fetchUserPalace()
@@ -274,82 +234,53 @@ const Home: NextPage = () => {
         >
           collect tokens
         </button>
-
         <button
           style={{
             margin: "20px 0",
           }}
           onClick={async () => {
-            toast("Initializing...", {
-              position: toast.POSITION.TOP_CENTER,
-              toastId,
-            })
-
             try {
-              if (!wallet || !wallet.signTransaction)
+              if (!balance) throw new Error("You don't have any coins")
+              if (!wallet || !program)
                 throw new Error("Please, connect your wallet first.")
 
-              if (!balance) throw new Error("You don't have any coins")
-
-              const program = new Program(
-                IDL,
-                PROGRAM_ID,
-                new AnchorProvider(connection, wallet, {})
-              )
-
-              const ata = await getAssociatedTokenAddress(
-                mint,
-                wallet.publicKey
-              )
-
-              const palaceAddress = PublicKey.findProgramAddressSync(
-                [Buffer.from("palace"), wallet.publicKey.toBytes()],
-                PROGRAM_ID
-              )[0]
-
-              const ixs = []
-              ixs.push(
+              const ixs = [
                 await program.methods
-                  .upgradePalace()
-                  .accounts({
-                    mint,
-                    fromAta: ata,
-                    palace: palaceAddress,
-                  })
-                  .instruction()
-              )
+                  .collectResources()
+                  .accounts({})
+                  .instruction(),
+              ]
 
-              const { blockhash, lastValidBlockHeight } = await connection
-                .getLatestBlockhash()
-                .then((res) => res)
-
-              const message = new TransactionMessage({
-                instructions: ixs,
-                payerKey: wallet.publicKey,
-                recentBlockhash: blockhash,
-              }).compileToV0Message()
-
-              const tx = new VersionedTransaction(message)
-
-              toast.update(toastId, { render: "Please, sign the transaction" })
-              const signed = await wallet.signTransaction(tx)
-
-              const txid = await connection.sendTransaction(signed)
-
-              const confirmed = await connection.confirmTransaction({
-                signature: txid,
-                blockhash,
-                lastValidBlockHeight,
-              })
-
-              if (confirmed.value.err) {
-                throw new Error(confirmed.value.err.toString())
-              }
-
-              toast.update(toastId, { render: "Success!", type: "success" })
+              await signAndSendTransactionInstructions(connection, wallet, ixs)
             } catch (e) {
               console.error(e)
-              toast.update(toastId, { render: e + "", type: "error" })
+            } finally {
+              fetchPlayerAccount()
+            }
+          }}
+        >
+          collect resources
+        </button>
+        <button
+          style={{
+            margin: "20px 0",
+          }}
+          onClick={async () => {
+            try {
+              if (!balance) throw new Error("You don't have any coins")
+              if (!wallet || !program)
+                throw new Error("Please, connect your wallet first.")
+
+              const ixs = [
+                await program.methods
+                  .upgradePalace()
+                  .accounts({})
+                  .instruction(),
+              ]
+
+              await signAndSendTransactionInstructions(connection, wallet, ixs)
+            } catch (e) {
+              console.error(e)
             } finally {
               fetchUserTokenBalance()
               fetchUserPalace()
@@ -359,10 +290,18 @@ const Home: NextPage = () => {
           upgrade palace
         </button>
 
-        <h3>Your coins: {balance}</h3>
+        <h3>Your tokens: {balance}</h3>
+        <h3>Your gold: {player?.gold.toNumber()}</h3>
+        <h3>Your lumber: {player?.lumber.toNumber()}</h3>
         <h3>Palace level: {palace?.level}</h3>
 
-        <ToastContainer />
+        <ToastContainer position={toast.POSITION.TOP_CENTER} autoClose={1000} />
+
+        <style jsx global>{`
+          body {
+            background: #333;
+          }
+        `}</style>
       </main>
     </>
   )
