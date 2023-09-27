@@ -6,7 +6,7 @@ import type { NextPage } from "next"
 import dynamic from "next/dynamic"
 import Head from "next/head"
 import React, { useCallback, useEffect, useState } from "react"
-import { AnchorProvider, IdlAccounts, Program } from "@coral-xyz/anchor"
+import { AnchorProvider, BN, IdlAccounts, Program } from "@coral-xyz/anchor"
 import { GameCore, IDL } from "@/lib/types/game_core"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
@@ -145,159 +145,283 @@ const Home: NextPage = () => {
           <WalletDisconnectButtonDynamic />
         </div>
 
-        <button
-          style={{
-            margin: "20px 0",
-          }}
-          onClick={async () => {
-            try {
-              if (!wallet || !wallet.signTransaction || !program)
-                throw new Error("Please, connect your wallet first.")
+        {wallet && !player ? (
+          <button
+            style={{
+              margin: "20px 0",
+            }}
+            onClick={async () => {
+              try {
+                if (!wallet || !wallet.signTransaction || !program)
+                  throw new Error("Please, connect your wallet first.")
 
-              const palaceAddress = PublicKey.findProgramAddressSync(
-                [Buffer.from("palace"), wallet.publicKey.toBytes()],
-                PROGRAM_ID
-              )[0]
+                const palaceAddress = PublicKey.findProgramAddressSync(
+                  [Buffer.from("palace"), wallet.publicKey.toBytes()],
+                  PROGRAM_ID
+                )[0]
 
-              const ix = await program.methods
-                .initialize()
-                .accounts({
-                  palace: palaceAddress,
-                })
-                .instruction()
-
-              await signAndSendTransactionInstructions(connection, wallet, [ix])
-            } catch (e) {
-              console.error(e)
-            } finally {
-              fetchUserPalace()
-            }
-          }}
-        >
-          initialize
-        </button>
-        <button
-          style={{
-            margin: "20px 0",
-          }}
-          onClick={async () => {
-            try {
-              if (!wallet || !wallet.signTransaction || !program)
-                throw new Error("Please, connect your wallet first.")
-
-              if (!palace)
-                throw new Error("Please, initialize your palace first.")
-
-              const destination = wallet.publicKey
-              const ata = await getAssociatedTokenAddress(mint, destination)
-              const account = await program.provider.connection.getAccountInfo(
-                ata
-              )
-
-              const ixs = []
-              // create associated token account if it doesn't exist
-              if (!account) {
-                ixs.push(
-                  createAssociatedTokenAccountInstruction(
-                    wallet.publicKey,
-                    ata,
-                    destination,
-                    mint
-                  )
-                )
-              }
-
-              const palaceAddress = PublicKey.findProgramAddressSync(
-                [Buffer.from("palace"), wallet.publicKey.toBytes()],
-                PROGRAM_ID
-              )[0]
-
-              ixs.push(
-                await program.methods
-                  .collectTokens()
+                const ix = await program.methods
+                  .initialize()
                   .accounts({
-                    mint,
-                    destinationAta: ata,
                     palace: palaceAddress,
                   })
                   .instruction()
-              )
 
-              await signAndSendTransactionInstructions(connection, wallet, ixs)
-            } catch (e) {
-              console.error(e)
-            } finally {
-              fetchUserTokenBalance()
-              fetchUserPalace()
-            }
-          }}
-        >
-          collect tokens
-        </button>
-        <button
-          style={{
-            margin: "20px 0",
-          }}
-          onClick={async () => {
-            try {
-              if (!balance) throw new Error("You don't have any coins")
-              if (!wallet || !program)
-                throw new Error("Please, connect your wallet first.")
+                await signAndSendTransactionInstructions(connection, wallet, [
+                  ix,
+                ])
+              } catch (e) {
+                console.error(e)
+              } finally {
+                fetchUserPalace()
+                fetchPlayerAccount()
+              }
+            }}
+          >
+            initialize
+          </button>
+        ) : null}
 
-              const ixs = [
-                await program.methods
-                  .collectResources()
-                  .accounts({})
-                  .instruction(),
-              ]
+        {wallet && player ? (
+          <>
+            <h2>palace</h2>
+            <div
+              style={{
+                display: "flex",
+                gap: "16px",
+              }}
+            >
+              <button
+                style={{
+                  margin: "20px 0",
+                }}
+                onClick={async () => {
+                  try {
+                    if (!wallet || !wallet.signTransaction || !program)
+                      throw new Error("Please, connect your wallet first.")
 
-              await signAndSendTransactionInstructions(connection, wallet, ixs)
-            } catch (e) {
-              console.error(e)
-            } finally {
-              fetchPlayerAccount()
-            }
-          }}
-        >
-          collect resources
-        </button>
-        <button
-          style={{
-            margin: "20px 0",
-          }}
-          onClick={async () => {
-            try {
-              if (!balance) throw new Error("You don't have any coins")
-              if (!wallet || !program)
-                throw new Error("Please, connect your wallet first.")
+                    if (!palace)
+                      throw new Error("Please, initialize your palace first.")
 
-              const ixs = [
-                await program.methods
-                  .upgradePalace()
-                  .accounts({})
-                  .instruction(),
-              ]
+                    const destination = wallet.publicKey
+                    const ata = await getAssociatedTokenAddress(
+                      mint,
+                      destination
+                    )
+                    const account =
+                      await program.provider.connection.getAccountInfo(ata)
 
-              await signAndSendTransactionInstructions(connection, wallet, ixs)
-            } catch (e) {
-              console.error(e)
-            } finally {
-              fetchUserTokenBalance()
-              fetchUserPalace()
-            }
-          }}
-        >
-          upgrade palace
-        </button>
+                    const ixs = []
+                    // create associated token account if it doesn't exist
+                    if (!account) {
+                      ixs.push(
+                        createAssociatedTokenAccountInstruction(
+                          wallet.publicKey,
+                          ata,
+                          destination,
+                          mint
+                        )
+                      )
+                    }
 
-        <h3>Your tokens: {balance}</h3>
-        <h3>Your gold: {player?.gold.toNumber()}</h3>
-        <h3>Your lumber: {player?.lumber.toNumber()}</h3>
-        <h3>Palace level: {palace?.level}</h3>
+                    const palaceAddress = PublicKey.findProgramAddressSync(
+                      [Buffer.from("palace"), wallet.publicKey.toBytes()],
+                      PROGRAM_ID
+                    )[0]
+
+                    ixs.push(
+                      await program.methods
+                        .collectTokens()
+                        .accounts({
+                          mint,
+                          destinationAta: ata,
+                          palace: palaceAddress,
+                        })
+                        .instruction()
+                    )
+
+                    await signAndSendTransactionInstructions(
+                      connection,
+                      wallet,
+                      ixs
+                    )
+                  } catch (e) {
+                    console.error(e)
+                  } finally {
+                    fetchUserTokenBalance()
+                    fetchUserPalace()
+                  }
+                }}
+              >
+                collect tokens
+              </button>
+              <button
+                style={{
+                  margin: "20px 0",
+                }}
+                onClick={async () => {
+                  try {
+                    if (!balance) throw new Error("You don't have any coins")
+                    if (!wallet || !program)
+                      throw new Error("Please, connect your wallet first.")
+
+                    const ixs = [
+                      await program.methods
+                        .collectResources()
+                        .accounts({})
+                        .instruction(),
+                    ]
+
+                    await signAndSendTransactionInstructions(
+                      connection,
+                      wallet,
+                      ixs
+                    )
+                  } catch (e) {
+                    console.error(e)
+                  } finally {
+                    fetchPlayerAccount()
+                  }
+                }}
+              >
+                collect resources
+              </button>
+              <button
+                style={{
+                  margin: "20px 0",
+                }}
+                onClick={async () => {
+                  try {
+                    if (!balance) throw new Error("You don't have any coins")
+                    if (!wallet || !program)
+                      throw new Error("Please, connect your wallet first.")
+
+                    const ixs = [
+                      await program.methods
+                        .upgradePalace()
+                        .accounts({})
+                        .instruction(),
+                    ]
+
+                    await signAndSendTransactionInstructions(
+                      connection,
+                      wallet,
+                      ixs
+                    )
+                  } catch (e) {
+                    console.error(e)
+                  } finally {
+                    fetchUserTokenBalance()
+                    fetchUserPalace()
+                    fetchPlayerAccount()
+                  }
+                }}
+              >
+                upgrade palace
+              </button>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                gap: "16px",
+              }}
+            >
+              <h3>Palace level: {palace?.level}</h3>
+              <h3>Tokens: {balance}</h3>
+              <h3>Gold: {player?.gold.toNumber()}</h3>
+              <h3>Lumber: {player?.lumber.toNumber()}</h3>
+            </div>
+
+            <h2>store</h2>
+            <button
+              style={{
+                margin: "20px 0",
+              }}
+              onClick={async () => {
+                try {
+                  if (!balance) throw new Error("You don't have any coins")
+
+                  if (!wallet || !program)
+                    throw new Error("Please, connect your wallet first.")
+
+                  const ata = await getAssociatedTokenAddress(
+                    mint,
+                    wallet.publicKey
+                  )
+
+                  const ixs = [
+                    await program.methods
+                      .purchaseMerchantItem("Miner", new BN(1000))
+                      .accounts({ fromAta: ata })
+                      .instruction(),
+                  ]
+
+                  await signAndSendTransactionInstructions(
+                    connection,
+                    wallet,
+                    ixs
+                  )
+                } catch (e) {
+                  console.error(e)
+                } finally {
+                  fetchUserTokenBalance()
+                  fetchUserPalace()
+                }
+              }}
+            >
+              Buy 1000 Miner
+            </button>
+            <button
+              style={{
+                margin: "20px 0",
+              }}
+              onClick={async () => {
+                try {
+                  if (!balance) throw new Error("You don't have any coins")
+
+                  if (!wallet || !program)
+                    throw new Error("Please, connect your wallet first.")
+
+                  const ata = await getAssociatedTokenAddress(
+                    mint,
+                    wallet.publicKey
+                  )
+
+                  const ixs = [
+                    await program.methods
+                      .purchaseMerchantItem("Lumberjack", new BN(1000))
+                      .accounts({ fromAta: ata })
+                      .instruction(),
+                  ]
+
+                  await signAndSendTransactionInstructions(
+                    connection,
+                    wallet,
+                    ixs
+                  )
+                } catch (e) {
+                  console.error(e)
+                } finally {
+                  fetchUserTokenBalance()
+                  fetchUserPalace()
+                }
+              }}
+            >
+              Buy 1000 Lumberjack
+            </button>
+          </>
+        ) : null}
 
         <ToastContainer position={toast.POSITION.TOP_CENTER} autoClose={1000} />
 
         <style jsx global>{`
+          main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 96px 0;
+          }
           body {
             background: #333;
           }

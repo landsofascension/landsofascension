@@ -70,7 +70,8 @@ const PROGRAM_ERRORS = parseIdlErrors(IDL)
 
 const getErrorMessageFromError = (error: any) => {
   const programError = translateError(error, PROGRAM_ERRORS) + ""
-  const errorMsg = programError?.split("Error Message: ")?.[1] || null
+  const errorMsg =
+    programError?.split("Error Message: ")?.[1] || error.message || null
 
   return errorMsg
 }
