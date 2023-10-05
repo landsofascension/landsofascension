@@ -1,9 +1,138 @@
-import React, { useState } from "react";
+"use client";
+
+import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
+import type { NextPage } from "next";
+import dynamic from "next/dynamic";
+import Head from "next/head";
+import React, { useCallback, useEffect, useState } from "react";
+import { AnchorProvider, BN, IdlAccounts, Program } from "@coral-xyz/anchor";
+import { GameCore, IDL } from "@/lib/types/game_core";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import {
+  createAssociatedTokenAccountInstruction,
+  getAssociatedTokenAddress,
+} from "@solana/spl-token";
+import { signAndSendTransactionInstructions } from "@/utils/transactions";
 import Modal from "react-modal";
 import "tailwindcss/tailwind.css";
 import Image from "next/image";
 
+const WalletDisconnectButtonDynamic = dynamic(
+  async () =>
+    (await import("@solana/wallet-adapter-react-ui")).WalletDisconnectButton,
+  { ssr: false }
+);
+const WalletMultiButtonDynamic = dynamic(
+  async () =>
+    (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
+  { ssr: false }
+);
+
+const PROGRAM_ID = new PublicKey(
+  "9LqUvkM7zkVqpYypCRsuh5KitHbZZFrcfwkRVgirnnUf"
+);
+
+const toastId = "test";
+
+const mint = PublicKey.findProgramAddressSync(
+  [Buffer.from("mint")],
+  PROGRAM_ID
+)[0];
+
+export type Palace = IdlAccounts<typeof IDL>["playerPalace"];
+export type Player = IdlAccounts<typeof IDL>["player"];
+
 const LandingPage: React.FC = () => {
+  const { connection } = useConnection();
+  const [program, setProgram] = useState<Program<GameCore> | null>(null);
+  const wallet = useAnchorWallet();
+  const [balance, setBalance] = useState(0);
+  const [palace, setPalace] = useState<Palace | null>(null);
+  const [player, setPlayer] = useState<Player | null>(null);
+
+  const fetchUserTokenBalance = useCallback(async () => {
+    if (wallet?.publicKey) {
+      try {
+        const ata = await getAssociatedTokenAddress(mint, wallet?.publicKey);
+        const balance = Number(
+          (await connection.getTokenAccountBalance(ata)).value.amount
+        );
+
+        console.log(balance);
+        setBalance(balance);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, [wallet?.publicKey]);
+  const fetchUserPalace = useCallback(async () => {
+    if (wallet?.publicKey) {
+      try {
+        const program = new Program(
+          IDL,
+          PROGRAM_ID,
+          new AnchorProvider(connection, wallet, {})
+        );
+
+        const palaceAddress = PublicKey.findProgramAddressSync(
+          [Buffer.from("palace"), wallet.publicKey.toBytes()],
+          PROGRAM_ID
+        )[0];
+
+        const palace = await program.account.playerPalace.fetch(palaceAddress);
+        setPalace(palace);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, [wallet?.publicKey]);
+  const fetchPlayerAccount = useCallback(async () => {
+    if (wallet?.publicKey) {
+      try {
+        const program = new Program(
+          IDL,
+          PROGRAM_ID,
+          new AnchorProvider(connection, wallet, {})
+        );
+
+        const playerAddress = PublicKey.findProgramAddressSync(
+          [Buffer.from("player"), wallet.publicKey.toBytes()],
+          PROGRAM_ID
+        )[0];
+
+        const player = await program.account.player.fetch(playerAddress);
+        setPlayer(player);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, [wallet?.publicKey]);
+
+  useEffect(() => {
+    fetchUserTokenBalance();
+  }, [fetchUserTokenBalance]);
+
+  useEffect(() => {
+    fetchUserPalace();
+  }, [fetchUserPalace]);
+
+  useEffect(() => {
+    fetchPlayerAccount();
+  }, [fetchPlayerAccount]);
+
+  useEffect(() => {
+    if (wallet && connection) {
+      const program = new Program(
+        IDL,
+        PROGRAM_ID,
+        new AnchorProvider(connection, wallet, {})
+      );
+
+      setProgram(program);
+    }
+  }, [wallet]);
   // Palace Modal state variables
   const [isPalaceModalOpen, setIsPalaceModalOpen] = React.useState(false);
   const openPalaceModal = () => {
@@ -47,8 +176,8 @@ const LandingPage: React.FC = () => {
 
   const palaceModalStyles = {
     content: {
-      width: "50%",
-      height: "65%",
+      width: "80%",
+      height: "85%",
       top: "50%",
       left: "50%",
       right: "auto",
@@ -79,9 +208,11 @@ const LandingPage: React.FC = () => {
   };
 
   return (
+    // Main Game Page
     <div
+      className="flex flex-col"
       style={{
-        backgroundImage: `url('https://opengameart.org/sites/default/files/demo_1_12.png')`,
+        backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1155882003388973127/Sunntabaile_-_City_Map.jpg')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         height: "100vh",
@@ -91,13 +222,24 @@ const LandingPage: React.FC = () => {
         alignItems: "center",
       }}
     >
+      {/* Wallet Buttons */}
+
+      <div className="align-top justify-end">
+        <WalletMultiButtonDynamic />
+        <WalletDisconnectButtonDynamic />
+      </div>
+
+      {/* Palace Image/Button */}
+
       <Image
-        src="https://cdn.discordapp.com/attachments/1098664234335871068/1150462142408036392/weaponsmith.gif"
-        width={150}
-        height={150}
+        src="https://cdn.discordapp.com/attachments/939309405227339776/1157085202770825276/Palace.png"
+        width={275}
+        height={275}
         onClick={() => openPalaceModal()}
         alt=""
       />
+
+      {/* Palace Modal */}
 
       <Modal
         isOpen={isPalaceModalOpen}
@@ -105,218 +247,373 @@ const LandingPage: React.FC = () => {
         style={palaceModalStyles}
       >
         <div className="">
+          {/* Palace name and image */}
+
           <div className="flex flex-col">
             <p className="text-black text-4xl text-center font-extrabold">
-              Council Palace
+              Palace
             </p>
+            {wallet && !player ? (
+              // Initialize Palace Button
+
+              <button
+                style={{
+                  margin: "20px 0",
+                }}
+                onClick={async () => {
+                  try {
+                    if (!wallet || !wallet.signTransaction || !program)
+                      throw new Error("Please, connect your wallet first.");
+
+                    const palaceAddress = PublicKey.findProgramAddressSync(
+                      [Buffer.from("palace"), wallet.publicKey.toBytes()],
+                      PROGRAM_ID
+                    )[0];
+
+                    const ix = await program.methods
+                      .initialize()
+                      .accounts({
+                        palace: palaceAddress,
+                      })
+                      .instruction();
+
+                    await signAndSendTransactionInstructions(
+                      connection,
+                      wallet,
+                      [ix]
+                    );
+                  } catch (e) {
+                    console.error(e);
+                  } finally {
+                    fetchUserPalace();
+                    fetchPlayerAccount();
+                  }
+                }}
+              >
+                initialize
+              </button>
+            ) : null}
+
+            {wallet && player ? (
+              <>
+                {/* Palace Level */}
+
+                <div className="flex flex-col text-black text-xl text-center p-2 font-bold">
+                  <h3>Level: {palace?.level}</h3>
+                  {/* Upgrade Palace Button */}
+
+                  <button
+                    className="m-0.5 border-solid border border-black"
+                    onClick={async () => {
+                      try {
+                        if (!balance)
+                          throw new Error("You don't have any coins");
+                        if (!wallet || !program)
+                          throw new Error("Please, connect your wallet first.");
+
+                        const ixs = [
+                          await program.methods
+                            .upgradePalace()
+                            .accounts({})
+                            .instruction(),
+                        ];
+
+                        await signAndSendTransactionInstructions(
+                          connection,
+                          wallet,
+                          ixs
+                        );
+                      } catch (e) {
+                        console.error(e);
+                      } finally {
+                        fetchUserTokenBalance();
+                        fetchUserPalace();
+                        fetchPlayerAccount();
+                      }
+                    }}
+                  >
+                    Upgrade Palace for {palace!.level * 1000} Gold and{" "}
+                    {palace!.level * 500} Lumber
+                  </button>
+                </div>
+              </>
+            ) : null}
+
             <Image
-              className="m-3 self-center"
+              className="m-1 self-center"
               src={
-                "https://cdn.discordapp.com/attachments/1098664234335871068/1150462142408036392/weaponsmith.gif"
+                "https://cdn.discordapp.com/attachments/939309405227339776/1157085202770825276/Palace.png"
               }
               width={200}
               height={200}
               alt=""
             />
-            <div className="flex justify-center align-middle">
-              <p className="text-black text-xl font-bold p-4">
-                Title: {"Soldier"}
-              </p>
-              <p className="text-black text-xl font-bold p-4">$GWEN: {"144"}</p>
-              <p className="text-black text-xl font-bold p-4">
-                Loot Score: {"1750"}
-              </p>
-            </div>
             <div className="flex flex-col self-center">
-              <div className="flex text-black text-xl text-center p-1 font-extrabold">
-                {
-                  <div className="mr-3">
-                    <Image
-                      src={
-                        "https://cdn.discordapp.com/attachments/939309405227339776/1123069416788197477/Blaze.png"
-                      }
-                      onClick={() => openFireModal()}
-                      alt=""
-                      className={`w-7`}
-                      height={25}
-                      width={25}
-                    />
-                  </div>
-                }
-                {"Pledge to The Fire Kingdom"}
-              </div>
-              <div className="flex text-black text-xl text-center p-1 font-extrabold">
-                {
-                  <div className="mr-3">
-                    <Image
-                      src={
-                        "https://cdn.discordapp.com/attachments/939309405227339776/1123069417283145868/Downpour.png"
-                      }
-                      onClick={() => openIceModal()}
-                      alt=""
-                      className={`w-7`}
-                      height={25}
-                      width={25}
-                    />
-                  </div>
-                }
-                {"Pledge to The Ice Kingdom"}
-              </div>
-              <div className="flex text-black text-xl text-center p-1 font-extrabold">
-                {
-                  <div className="mr-3">
-                    <Image
-                      src={
-                        "https://cdn.discordapp.com/attachments/939309405227339776/1123069417803227246/Thunderstorm.png"
-                      }
-                      onClick={() => openLightningModal()}
-                      alt=""
-                      className={`w-7`}
-                      height={25}
-                      width={25}
-                    />
-                  </div>
-                }
+              <div className="flex text-black text-center p-2 font-bold">
+                {/* Palace Dashboard */}
 
-                {"Pledge to The Lightning Kingdom"}
+                {wallet && player ? (
+                  <>
+                    <div className="flex flex-col content-evenly justify-evenly">
+                      <div className="flex flex-col content-evenly justify-evenly">
+                        <div className="flex mb-5 justify-evenly">
+                          {/* GWEN Balance */}
+
+                          <div className="">
+                            <h3 className="text-xl">GWEN</h3>
+                            <h3>{balance}</h3>
+                            {/* Collect Tokens Button */}
+
+                            <button
+                              className="m-0.5 border-solid border border-black"
+                              onClick={async () => {
+                                try {
+                                  if (
+                                    !wallet ||
+                                    !wallet.signTransaction ||
+                                    !program
+                                  )
+                                    throw new Error(
+                                      "Please, connect your wallet first."
+                                    );
+
+                                  if (!palace)
+                                    throw new Error(
+                                      "Please, initialize your palace first."
+                                    );
+
+                                  const destination = wallet.publicKey;
+                                  const ata = await getAssociatedTokenAddress(
+                                    mint,
+                                    destination
+                                  );
+                                  const account =
+                                    await program.provider.connection.getAccountInfo(
+                                      ata
+                                    );
+
+                                  const ixs = [];
+                                  // create associated token account if it doesn't exist
+                                  if (!account) {
+                                    ixs.push(
+                                      createAssociatedTokenAccountInstruction(
+                                        wallet.publicKey,
+                                        ata,
+                                        destination,
+                                        mint
+                                      )
+                                    );
+                                  }
+
+                                  const palaceAddress =
+                                    PublicKey.findProgramAddressSync(
+                                      [
+                                        Buffer.from("palace"),
+                                        wallet.publicKey.toBytes(),
+                                      ],
+                                      PROGRAM_ID
+                                    )[0];
+
+                                  ixs.push(
+                                    await program.methods
+                                      .collectTokens()
+                                      .accounts({
+                                        mint,
+                                        destinationAta: ata,
+                                        palace: palaceAddress,
+                                      })
+                                      .instruction()
+                                  );
+
+                                  await signAndSendTransactionInstructions(
+                                    connection,
+                                    wallet,
+                                    ixs
+                                  );
+                                } catch (e) {
+                                  console.error(e);
+                                } finally {
+                                  fetchUserTokenBalance();
+                                  fetchUserPalace();
+                                }
+                              }}
+                            >
+                              <div className="p-0.5">Collect Tokens</div>
+                            </button>
+                          </div>
+                          <div>
+                            <div className="flex justify-evenly">
+                              {/* Gold Amount */}
+
+                              <div>
+                                <h3 className="text-xl">Gold</h3>
+                                <h3>{player?.gold.toNumber()}</h3>
+                              </div>
+
+                              {/* Lumber Amount */}
+
+                              <div>
+                                <h3 className="text-xl">Lumber</h3>
+                                <h3>{player?.lumber.toNumber()}</h3>
+                              </div>
+                            </div>
+                            <div>
+                              {/* Collect Resources Button */}
+
+                              <button
+                                className="m-0.5 border-solid border border-black"
+                                onClick={async () => {
+                                  try {
+                                    if (!balance)
+                                      throw new Error(
+                                        "You don't have any coins"
+                                      );
+                                    if (!wallet || !program)
+                                      throw new Error(
+                                        "Please, connect your wallet first."
+                                      );
+
+                                    const ixs = [
+                                      await program.methods
+                                        .collectResources()
+                                        .accounts({})
+                                        .instruction(),
+                                    ];
+
+                                    await signAndSendTransactionInstructions(
+                                      connection,
+                                      wallet,
+                                      ixs
+                                    );
+                                  } catch (e) {
+                                    console.error(e);
+                                  } finally {
+                                    fetchPlayerAccount();
+                                  }
+                                }}
+                              >
+                                <div className="p-0.5">
+                                  Collect {player?.lumberjacks * 3} Lumber and{" "}
+                                  {player?.miners * 3} Gold
+                                </div>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex">
+                        <div>
+                          {/* Miners value */}
+
+                          <h3>Miners</h3>
+
+                          <h3>{player?.miners.toNumber()}</h3>
+
+                          {/* Hire Miners Button */}
+
+                          <button
+                            className="m-0.5 border-solid border border-black"
+                            onClick={async () => {
+                              try {
+                                if (!balance)
+                                  throw new Error("You don't have any coins");
+
+                                if (!wallet || !program)
+                                  throw new Error(
+                                    "Please, connect your wallet first."
+                                  );
+
+                                const ata = await getAssociatedTokenAddress(
+                                  mint,
+                                  wallet.publicKey
+                                );
+
+                                const ixs = [
+                                  await program.methods
+                                    .purchaseMerchantItem("Miner", new BN(10))
+                                    .accounts({ fromAta: ata })
+                                    .instruction(),
+                                ];
+
+                                await signAndSendTransactionInstructions(
+                                  connection,
+                                  wallet,
+                                  ixs
+                                );
+                              } catch (e) {
+                                console.error(e);
+                              } finally {
+                                fetchUserTokenBalance();
+                                fetchUserPalace();
+                                fetchPlayerAccount();
+                              }
+                            }}
+                          >
+                            <div className="p-0.5">
+                              Hire 10 Miners for 500 GWEN
+                            </div>
+                          </button>
+                        </div>
+                        <div>
+                          {/* Lumberjacks value */}
+
+                          <h3>Lumberjacks</h3>
+
+                          <h3>{player?.lumberjacks.toNumber()}</h3>
+
+                          {/* Hire Lumberjacks Button */}
+
+                          <button
+                            className="m-0.5 border-solid border border-black"
+                            onClick={async () => {
+                              try {
+                                if (!balance)
+                                  throw new Error("You don't have any coins");
+
+                                if (!wallet || !program)
+                                  throw new Error(
+                                    "Please, connect your wallet first."
+                                  );
+
+                                const ata = await getAssociatedTokenAddress(
+                                  mint,
+                                  wallet.publicKey
+                                );
+
+                                const ixs = [
+                                  await program.methods
+                                    .purchaseMerchantItem(
+                                      "Lumberjack",
+                                      new BN(10)
+                                    )
+                                    .accounts({ fromAta: ata })
+                                    .instruction(),
+                                ];
+
+                                await signAndSendTransactionInstructions(
+                                  connection,
+                                  wallet,
+                                  ixs
+                                );
+                              } catch (e) {
+                                console.error(e);
+                              } finally {
+                                fetchUserTokenBalance();
+                                fetchUserPalace();
+                                fetchPlayerAccount();
+                              }
+                            }}
+                          >
+                            <div className="p-0.5">
+                              Hire 10 Lumberjacks for 1000 GWEN
+                            </div>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : null}
               </div>
-              <div className="flex text-black text-xl text-center p-1 font-extrabold">
-                {
-                  <div className="mr-3">
-                    <Image
-                      src={
-                        "https://cdn.discordapp.com/attachments/939309405227339776/1123069417522200597/Earthquake.png"
-                      }
-                      onClick={() => openEarthModal()}
-                      alt=""
-                      className={`w-7`}
-                      height={25}
-                      width={25}
-                    />
-                  </div>
-                }
-                {"Pledge to The Earth Kingdom"}
-              </div>
-            </div>
-          </div>
-          <div className="flex justify-center text-xl font-bold">
-            <button
-              className="bg-black text-white p-3 m-6"
-              onClick={closePalaceModal}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </Modal>
-      <Modal
-        isOpen={isFireModalOpen}
-        onRequestClose={closeFireModal}
-        style={pledgeModalStyles}
-      >
-        <div className="flex justify-center">
-          <div className="flex flex-col">
-            <p className="text-black text-4xl text-center font-extrabold mb-5">
-              🔥 Fire Kingdom 🔥
-            </p>
-            <p className="text-black text-xl text-center font-bold">
-              The Fire Kingdom thanks you for your pledge!
-            </p>
-            <p className="text-black text-xl text-center font-bold">
-              You will be rewarded for your loyalty with $GWEN!
-            </p>
-            <p className="text-black text-xl text-center font-bold">💰💰💰</p>
-            <div className="flex justify-center text-xl font-bold">
-              <button
-                className="bg-black text-white p-3 mt-6"
-                onClick={closeFireModal}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      </Modal>
-      <Modal
-        isOpen={isIceModalOpen}
-        onRequestClose={closeIceModal}
-        style={pledgeModalStyles}
-      >
-        <div className="flex justify-center">
-          <div className="flex flex-col">
-            <p className="text-black text-4xl text-center font-extrabold mb-5">
-              🧊 Ice Kingdom 🧊
-            </p>
-            <p className="text-black text-xl text-center font-bold">
-              The Ice Kingdom thanks you for your pledge!
-            </p>
-            <p className="text-black text-xl text-center font-bold">
-              You will be rewarded for your loyalty with $GWEN!
-            </p>
-            <p className="text-black text-xl text-center font-bold">💰💰💰</p>
-            <div className="flex justify-center text-xl font-bold">
-              <button
-                className="bg-black text-white p-3 mt-6"
-                onClick={closeIceModal}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      </Modal>
-      <Modal
-        isOpen={isLightningModalOpen}
-        onRequestClose={closeLightningModal}
-        style={pledgeModalStyles}
-      >
-        <div className="flex justify-center">
-          <div className="flex flex-col">
-            <p className="text-black text-4xl text-center font-extrabold mb-5">
-              ⚡ Lightning Kingdom ⚡
-            </p>
-            <p className="text-black text-xl text-center font-bold">
-              The Lightning Kingdom thanks you for your pledge!
-            </p>
-            <p className="text-black text-xl text-center font-bold">
-              You will be rewarded for your loyalty with $GWEN!
-            </p>
-            <p className="text-black text-xl text-center font-bold">💰💰💰</p>
-            <div className="flex justify-center text-xl font-bold">
-              <button
-                className="bg-black text-white p-3 mt-6"
-                onClick={closeLightningModal}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      </Modal>
-      <Modal
-        isOpen={isEarthModalOpen}
-        onRequestClose={closeEarthModal}
-        style={pledgeModalStyles}
-      >
-        <div className="flex justify-center">
-          <div className="flex flex-col">
-            <p className="text-black text-4xl text-center font-extrabold mb-5">
-              🌳 Earth Kingdom 🌳
-            </p>
-            <p className="text-black text-xl text-center font-bold">
-              The Earth Kingdom thanks you for your pledge!
-            </p>
-            <p className="text-black text-xl text-center font-bold">
-              You will be rewarded for your loyalty with $GWEN!
-            </p>
-            <p className="text-black text-xl text-center font-bold">💰💰💰</p>
-            <div className="flex justify-center text-xl font-bold">
-              <button
-                className="bg-black text-white p-3 mt-6"
-                onClick={closeEarthModal}
-              >
-                Close
-              </button>
             </div>
           </div>
         </div>
