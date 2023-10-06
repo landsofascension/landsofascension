@@ -174,6 +174,43 @@ const LandingPage: React.FC = () => {
     setIsEarthModalOpen(false);
   };
 
+  const palaceTitleStyles = {
+    backgroundImage: `url('https://media.discordapp.net/attachments/1152274140141735936/1159655519401812048/title.png')`,
+    backgroundSize: "100% 100%",
+    backgroundRepeat: "no-repeat",
+  };
+
+  const palaceUpgradeButtonStyles = {
+    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655934977650870/plank_15.png')`,
+    backgroundSize: "100% 100%",
+    backgroundRepeat: "no-repeat",
+  };
+  const collectAndHireBoxStyles = {
+    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159682151835512893/frame.png')`,
+    backgroundSize: "100% 100%",
+    backgroundRepeat: "no-repeat",
+  };
+  const collectTokensButtonStyles = {
+    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655518407753778/plank_13.png')`,
+    backgroundSize: "100% 100%",
+    backgroundRepeat: "no-repeat",
+  };
+  const collectResourcesButtonStyles = {
+    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655518638448781/plank_14.png')`,
+    backgroundSize: "100% 100%",
+    backgroundRepeat: "no-repeat",
+  };
+  const hireMinersButtonStyles = {
+    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655518873342102/plank_16.png')`,
+    backgroundSize: "100% 100%",
+    backgroundRepeat: "no-repeat",
+  };
+  const hireLumberjacksButtonStyles = {
+    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655518873342102/plank_16.png')`,
+    backgroundSize: "100% 100%",
+    backgroundRepeat: "no-repeat",
+  };
+
   const palaceModalStyles = {
     content: {
       width: "80%",
@@ -183,7 +220,11 @@ const LandingPage: React.FC = () => {
       right: "auto",
       bottom: "auto",
       transform: "translate(-50%, -50%)",
-      backgroundColor: "grey",
+      backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159651293053329508/bg_01_02.png')`,
+      backgroundSize: "100% 100%",
+      backgroundRepeat: "no-repeat",
+      backgroundColor: "transparent",
+      border: "none",
       color: "black",
     },
     overlay: {
@@ -250,9 +291,21 @@ const LandingPage: React.FC = () => {
           {/* Palace name and image */}
 
           <div className="flex flex-col">
-            <p className="text-black text-4xl text-center font-extrabold">
-              Palace
-            </p>
+            <div className="self-center" style={palaceTitleStyles}>
+              <p className="text-black text-3xl text-center font-bold pb-5 px-24">
+                Palace
+              </p>
+            </div>
+
+            <Image
+              className="self-center"
+              src={
+                "https://cdn.discordapp.com/attachments/939309405227339776/1157085202770825276/Palace.png"
+              }
+              width={200}
+              height={200}
+              alt=""
+            />
             {wallet && !player ? (
               // Initialize Palace Button
 
@@ -298,12 +351,12 @@ const LandingPage: React.FC = () => {
               <>
                 {/* Palace Level */}
 
-                <div className="flex flex-col text-black text-xl text-center p-2 font-bold">
-                  <h3>Level: {palace?.level}</h3>
+                <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center  ">
+                  <p>Level: {palace?.level}</p>
                   {/* Upgrade Palace Button */}
-
                   <button
-                    className="m-0.5 border-solid border border-black"
+                    style={palaceUpgradeButtonStyles}
+                    className="m-0.5 px-6 py-3 text-base"
                     onClick={async () => {
                       try {
                         if (!balance)
@@ -332,40 +385,39 @@ const LandingPage: React.FC = () => {
                       }
                     }}
                   >
-                    Upgrade Palace for {palace!.level * 1000} Gold and{" "}
-                    {palace!.level * 500} Lumber
+                    <p>Upgrade</p>
                   </button>
+
+                  <p className="text-xs">Next Level Cost:</p>
+                  <p className="text-xs">
+                    {palace!.level * 1000} Gold + {palace!.level * 500} Lumber
+                  </p>
                 </div>
               </>
             ) : null}
 
-            <Image
-              className="m-1 self-center"
-              src={
-                "https://cdn.discordapp.com/attachments/939309405227339776/1157085202770825276/Palace.png"
-              }
-              width={200}
-              height={200}
-              alt=""
-            />
-            <div className="flex flex-col self-center">
-              <div className="flex text-black text-center p-2 font-bold">
+            <div
+              style={collectAndHireBoxStyles}
+              className="flex flex-col self-center p-5"
+            >
+              <div className="flex text-gray-400 text-center p-1 font-bold">
                 {/* Palace Dashboard */}
 
                 {wallet && player ? (
                   <>
-                    <div className="flex flex-col content-evenly justify-evenly">
-                      <div className="flex flex-col content-evenly justify-evenly">
-                        <div className="flex mb-5 justify-evenly">
+                    <div className="flex flex-col">
+                      <div>
+                        <div className="flex mb-1 justify-evenly">
                           {/* GWEN Balance */}
 
                           <div className="">
-                            <h3 className="text-xl">GWEN</h3>
+                            <h3 className="text-lg">GWEN</h3>
                             <h3>{balance}</h3>
                             {/* Collect Tokens Button */}
 
                             <button
-                              className="m-0.5 border-solid border border-black"
+                              style={collectTokensButtonStyles}
+                              className="m-0.5 px-6 py-3 text-base"
                               onClick={async () => {
                                 try {
                                   if (
@@ -438,22 +490,29 @@ const LandingPage: React.FC = () => {
                                 }
                               }}
                             >
-                              <div className="p-0.5">Collect Tokens</div>
+                              <div className="p-0.5 text-black">Collect</div>
                             </button>
+                            <div>
+                              <p className="text-xs text-gray-600">x GWEN</p>
+                              <p className="text-xs text-gray-600">
+                                ready to Collect
+                              </p>
+                            </div>
                           </div>
+
                           <div>
                             <div className="flex justify-evenly">
                               {/* Gold Amount */}
 
-                              <div>
-                                <h3 className="text-xl">Gold</h3>
+                              <div className="px-1">
+                                <h3 className="text-lg">Gold</h3>
                                 <h3>{player?.gold.toNumber()}</h3>
                               </div>
 
                               {/* Lumber Amount */}
 
-                              <div>
-                                <h3 className="text-xl">Lumber</h3>
+                              <div className="px-1">
+                                <h3 className="text-lg">Lumber</h3>
                                 <h3>{player?.lumber.toNumber()}</h3>
                               </div>
                             </div>
@@ -461,7 +520,8 @@ const LandingPage: React.FC = () => {
                               {/* Collect Resources Button */}
 
                               <button
-                                className="m-0.5 border-solid border border-black"
+                                style={collectResourcesButtonStyles}
+                                className="m-0.5 px-6 py-3 text-base"
                                 onClick={async () => {
                                   try {
                                     if (!balance)
@@ -492,16 +552,22 @@ const LandingPage: React.FC = () => {
                                   }
                                 }}
                               >
-                                <div className="p-0.5">
-                                  Collect {player?.lumberjacks * 3} Lumber and{" "}
-                                  {player?.miners * 3} Gold
-                                </div>
+                                <div className="p-0.5 text-black">Collect</div>
                               </button>
+                            </div>
+                            <div>
+                              <p className="text-xs text-gray-600">
+                                {player?.miners * 3} Gold +{" "}
+                                {player?.lumberjacks * 3} Lumber
+                              </p>
+                              <p className="text-xs text-gray-600">
+                                each Collect
+                              </p>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="flex">
+                      <div className="flex  justify-evenly">
                         <div>
                           {/* Miners value */}
 
@@ -512,7 +578,8 @@ const LandingPage: React.FC = () => {
                           {/* Hire Miners Button */}
 
                           <button
-                            className="m-0.5 border-solid border border-black"
+                            style={hireMinersButtonStyles}
+                            className="m-0.5 px-6 py-3 text-base"
                             onClick={async () => {
                               try {
                                 if (!balance)
@@ -549,10 +616,12 @@ const LandingPage: React.FC = () => {
                               }
                             }}
                           >
-                            <div className="p-0.5">
-                              Hire 10 Miners for 500 GWEN
-                            </div>
+                            <div className="p-0.5 text-black">Hire</div>
                           </button>
+                          <div>
+                            <p className="text-xs text-gray-600">10 Miners</p>
+                            <p className="text-xs text-gray-600">@ 500 Gwen</p>
+                          </div>
                         </div>
                         <div>
                           {/* Lumberjacks value */}
@@ -564,7 +633,8 @@ const LandingPage: React.FC = () => {
                           {/* Hire Lumberjacks Button */}
 
                           <button
-                            className="m-0.5 border-solid border border-black"
+                            style={hireLumberjacksButtonStyles}
+                            className="m-0.5 px-6 py-3 text-base"
                             onClick={async () => {
                               try {
                                 if (!balance)
@@ -604,10 +674,14 @@ const LandingPage: React.FC = () => {
                               }
                             }}
                           >
-                            <div className="p-0.5">
-                              Hire 10 Lumberjacks for 1000 GWEN
-                            </div>
+                            <div className="p-0.5 text-black">Hire</div>
                           </button>
+                          <div>
+                            <p className="text-xs text-gray-600">
+                              10 Lumberjacks
+                            </p>
+                            <p className="text-xs text-gray-600">@ 1000 Gwen</p>
+                          </div>
                         </div>
                       </div>
                     </div>
