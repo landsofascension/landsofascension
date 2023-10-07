@@ -1,5 +1,4 @@
 import type { Theme } from "theme-ui"
-import {} from "theme-ui"
 
 export const theme: Theme = {
   fonts: {
