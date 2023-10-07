@@ -9,7 +9,7 @@ import {
 } from "@solana/web3.js"
 import { toast } from "react-toastify"
 
-// Builds a transaction, sends it to the network, and notifies the user.
+// Builds a transaction, ask for signature, sends it to the network, and notifies the user.
 export const signAndSendTransactionInstructions = async (
   connection: Connection,
   wallet: AnchorWallet,

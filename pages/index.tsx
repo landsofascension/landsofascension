@@ -1,7 +1,11 @@
 "use client"
 
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react"
-import { PublicKey } from "@solana/web3.js"
+import {
+  PublicKey,
+  TransactionMessage,
+  VersionedTransaction,
+} from "@solana/web3.js"
 import type { NextPage } from "next"
 import dynamic from "next/dynamic"
 import Head from "next/head"
@@ -50,9 +54,13 @@ const Home: NextPage = () => {
   const fetchUserTokenBalance = useCallback(async () => {
     if (wallet?.publicKey) {
       try {
-        const ata = await getAssociatedTokenAddress(mint, wallet?.publicKey)
+        const vault = PublicKey.findProgramAddressSync(
+          [Buffer.from("player_vault"), wallet.publicKey.toBytes()],
+          PROGRAM_ID
+        )[0]
+
         const balance = Number(
-          (await connection.getTokenAccountBalance(ata)).value.amount
+          (await connection.getTokenAccountBalance(vault)).value.amount
         )
 
         console.log(balance)
@@ -73,7 +81,7 @@ const Home: NextPage = () => {
         )
 
         const palaceAddress = PublicKey.findProgramAddressSync(
-          [Buffer.from("palace"), wallet.publicKey.toBytes()],
+          [Buffer.from("player_palace"), wallet.publicKey.toBytes()],
           PROGRAM_ID
         )[0]
 
@@ -161,9 +169,9 @@ const Home: NextPage = () => {
                 )[0]
 
                 const ix = await program.methods
-                  .initialize()
+                  .signUpPlayer()
                   .accounts({
-                    palace: palaceAddress,
+                    playerPalace: palaceAddress,
                   })
                   .instruction()
 
@@ -224,27 +232,51 @@ const Home: NextPage = () => {
                       )
                     }
 
-                    const palaceAddress = PublicKey.findProgramAddressSync(
-                      [Buffer.from("palace"), wallet.publicKey.toBytes()],
-                      PROGRAM_ID
-                    )[0]
-
                     ixs.push(
                       await program.methods
-                        .collectTokens()
+                        .collectPalaceTokens()
                         .accounts({
-                          mint,
-                          destinationAta: ata,
-                          palace: palaceAddress,
+                          owner: wallet.publicKey,
                         })
                         .instruction()
                     )
 
-                    await signAndSendTransactionInstructions(
-                      connection,
-                      wallet,
-                      ixs
-                    )
+                    const { blockhash, lastValidBlockHeight } = await connection
+                      .getLatestBlockhash()
+                      .then((res) => res)
+
+                    const vault = PublicKey.findProgramAddressSync(
+                      [Buffer.from("player_vault"), wallet.publicKey.toBytes()],
+                      PROGRAM_ID
+                    )[0]
+
+                    console.log(vault.toString())
+
+                    const message = new TransactionMessage({
+                      instructions: ixs,
+                      payerKey: wallet.publicKey,
+                      recentBlockhash: blockhash,
+                    }).compileToV0Message()
+
+                    const tx = new VersionedTransaction(message)
+
+                    toast("Please, sign the transaction")
+
+                    const signed = await wallet.signTransaction(tx)
+
+                    const txid = await connection.sendTransaction(signed, {})
+
+                    const confirmed = await connection.confirmTransaction({
+                      signature: txid,
+                      blockhash,
+                      lastValidBlockHeight,
+                    })
+
+                    if (confirmed.value.err) {
+                      throw new Error(confirmed.value.err.toString())
+                    }
+
+                    toast("Success!", { type: "success" })
                   } catch (e) {
                     console.error(e)
                   } finally {
@@ -267,8 +299,10 @@ const Home: NextPage = () => {
 
                     const ixs = [
                       await program.methods
-                        .collectResources()
-                        .accounts({})
+                        .collectPlayerResources()
+                        .accounts({
+                          owner: wallet.publicKey,
+                        })
                         .instruction(),
                     ]
 
@@ -298,8 +332,10 @@ const Home: NextPage = () => {
 
                     const ixs = [
                       await program.methods
-                        .upgradePalace()
-                        .accounts({})
+                        .upgradePlayerPalace()
+                        .accounts({
+                          owner: wallet.publicKey,
+                        })
                         .instruction(),
                     ]
 
@@ -344,15 +380,12 @@ const Home: NextPage = () => {
                   if (!wallet || !program)
                     throw new Error("Please, connect your wallet first.")
 
-                  const ata = await getAssociatedTokenAddress(
-                    mint,
-                    wallet.publicKey
-                  )
-
                   const ixs = [
                     await program.methods
                       .purchaseMerchantItem("Miner", new BN(1000))
-                      .accounts({ fromAta: ata })
+                      .accounts({
+                        owner: wallet.publicKey,
+                      })
                       .instruction(),
                   ]
 
@@ -382,15 +415,12 @@ const Home: NextPage = () => {
                   if (!wallet || !program)
                     throw new Error("Please, connect your wallet first.")
 
-                  const ata = await getAssociatedTokenAddress(
-                    mint,
-                    wallet.publicKey
-                  )
-
                   const ixs = [
                     await program.methods
                       .purchaseMerchantItem("Lumberjack", new BN(1000))
-                      .accounts({ fromAta: ata })
+                      .accounts({
+                        owner: wallet.publicKey,
+                      })
                       .instruction(),
                   ]
 
