@@ -15,7 +15,7 @@ export default async function POST(req: NextApiRequest, res: NextApiResponse) {
     }
 
     // Secret key to sign the token
-    const secretKey = process.env.JWT_SECRET_KEY as string
+    const secretKey = process.env.JWT_SECRET as string
 
     // Create a JWT token
     const token = sign(user, secretKey, { expiresIn: "24h" }) // Expires in 24 hours

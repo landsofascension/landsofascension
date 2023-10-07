@@ -5,7 +5,7 @@ import {
   TransactionMessage,
   VersionedTransaction,
 } from "@solana/web3.js"
-import type { NextPage } from "next"
+import type { NextPage, NextPageContext } from "next"
 import dynamic from "next/dynamic"
 import Head from "next/head"
 import React, { useCallback, useEffect, useState } from "react"
@@ -18,6 +18,7 @@ import {
 
 import { signAndSendTransactionInstructions } from "@/utils/transactions"
 import { GameCore, IDL } from "@/lib/types/game_core"
+import { verify } from "jsonwebtoken"
 
 const PROGRAM_ID = new PublicKey("9LqUvkM7zkVqpYypCRsuh5KitHbZZFrcfwkRVgirnnUf")
 
@@ -31,7 +32,7 @@ const mint = PublicKey.findProgramAddressSync(
 export type Palace = IdlAccounts<typeof IDL>["playerPalace"]
 export type Player = IdlAccounts<typeof IDL>["player"]
 
-const Home: NextPage = () => {
+const Home: NextPage = (props) => {
   const { connection } = useConnection()
   const [program, setProgram] = useState<Program<GameCore> | null>(null)
   const wallet = useAnchorWallet()
@@ -39,6 +40,7 @@ const Home: NextPage = () => {
   const [palace, setPalace] = useState<Palace | null>(null)
   const [player, setPlayer] = useState<Player | null>(null)
 
+  console.log(props.authorized)
   const fetchUserTokenBalance = useCallback(async () => {
     if (wallet?.publicKey) {
       try {
@@ -427,6 +429,27 @@ const Home: NextPage = () => {
       </main>
     </>
   )
+}
+
+Home.getInitialProps = async (ctx: NextPageContext) => {
+  // server side
+  if (ctx.req) {
+    const cookies = ctx.req.headers.cookie
+    const authToken = cookies
+      ?.split(";")
+      .find((c) => c.trim().startsWith("authToken="))
+      ?.split("=")[1]
+
+    if (!authToken) return { authorized: false }
+
+    const decoded = verify(authToken, process.env.JWT_SECRET as string)
+
+    if (!decoded) return { authorized: false }
+
+    return { authorized: true }
+  } else {
+    return { authorized: null }
+  }
 }
 
 export default Home
