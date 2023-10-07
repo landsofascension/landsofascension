@@ -11,6 +11,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "jsxImportSource": "theme-ui",
     "jsx": "preserve",
     "incremental": true,
     "plugins": [

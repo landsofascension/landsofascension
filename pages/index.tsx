@@ -19,6 +19,7 @@ import {
   getAssociatedTokenAddress,
 } from "@solana/spl-token"
 import { signAndSendTransactionInstructions } from "@/utils/transactions"
+import { Input } from "theme-ui"
 
 const WalletDisconnectButtonDynamic = dynamic(
   async () =>
@@ -442,20 +443,19 @@ const Home: NextPage = () => {
           </>
         ) : null}
 
-        <ToastContainer position={toast.POSITION.TOP_CENTER} autoClose={1000} />
+        <form
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+            width: "300px",
+          }}
+        >
+          <Input type="text" name="username" placeholder="username" />
+          <Input type="password" name="password" placeholder="password" />
+        </form>
 
-        <style jsx global>{`
-          main {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            margin: 96px 0;
-          }
-          body {
-            background: #333;
-          }
-        `}</style>
+        <ToastContainer position={toast.POSITION.TOP_CENTER} autoClose={1000} />
       </main>
     </>
   )
