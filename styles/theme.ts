@@ -13,14 +13,35 @@ export const theme: Theme = {
     background: "#333",
   },
 
+  text: {
+    default: {
+      marginBottom: "8px",
+    },
+  },
+
+  buttons: {
+    primary: {
+      cursor: "pointer",
+    },
+  },
   styles: {
     root: {
+      fontSize: "16px",
+      lineHeight: 1.45,
+
       main: {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
         margin: "96px 0",
+      },
+
+      "& label": {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        marginBottom: "16px",
       },
     },
   },
