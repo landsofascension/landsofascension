@@ -131,7 +131,7 @@ export default function useGameCore() {
         throw new Error("Please, connect your wallet first.")
 
       const palaceAddress = PublicKey.findProgramAddressSync(
-        [Buffer.from("palace"), wallet.publicKey?.toBytes()],
+        [Buffer.from("player_palace"), wallet.publicKey?.toBytes()],
         PROGRAM_ID
       )[0]
 
@@ -298,6 +298,7 @@ export default function useGameCore() {
     } finally {
       fetchUserTokenBalance()
       fetchUserPalace()
+      fetchPlayerAccount()
     }
   }
 
