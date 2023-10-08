@@ -434,17 +434,21 @@ const Home: NextPage = (props) => {
 Home.getInitialProps = async (ctx: NextPageContext) => {
   // server side
   if (ctx.req) {
-    const cookies = ctx.req.headers.cookie
-    const authToken = cookies
-      ?.split(";")
-      .find((c) => c.trim().startsWith("authToken="))
-      ?.split("=")[1]
+    try {
+      const cookies = ctx.req.headers.cookie
+      const authToken = cookies
+        ?.split(";")
+        .find((c) => c.trim().startsWith("authToken="))
+        ?.split("=")[1]
 
-    if (!authToken) return { authorized: false }
+      if (!authToken) return { authorized: false }
 
-    const decoded = verify(authToken, process.env.JWT_SECRET as string)
+      const decoded = verify(authToken, process.env.JWT_SECRET as string)
 
-    if (!decoded) return { authorized: false }
+      if (!decoded) return { authorized: false }
+    } catch (e) {
+      return { authorized: false }
+    }
 
     return { authorized: true }
   } else {
