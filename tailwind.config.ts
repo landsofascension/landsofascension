@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+const defaultTheme = require("tailwindcss/defaultTheme");
 
 const config: Config = {
   mode: "jit",
@@ -9,6 +10,11 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        medieval: ["medievalSharp", ...defaultTheme.fontFamily.sans],
+        eagle: ["eagleLake", ...defaultTheme.fontFamily.sans],
+        devinne: ["devinne", ...defaultTheme.fontFamily.sans],
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":

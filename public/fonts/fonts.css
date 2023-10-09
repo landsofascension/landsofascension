@@ -1,0 +1,30 @@
+@font-face {
+  font-family: "medievalSharp";
+  src: url("MedievalSharp-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "deutsch";
+  src: url("Deutsch.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "uncial";
+  src: url("UncialAntiqua-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "eagleLake";
+  src: url("EagleLake-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "devinne";
+  src: url("DevinneSwash-qZd5.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}

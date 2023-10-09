@@ -1,27 +1,29 @@
-"use client"
+"use client";
 
-import { useAnchorWallet } from "@solana/wallet-adapter-react"
-import dynamic from "next/dynamic"
-import React from "react"
-import "react-toastify/dist/ReactToastify.css"
-import Modal from "react-modal"
-import "tailwindcss/tailwind.css"
-import Image from "next/image"
-import useGameCore from "@/hooks/useGameCore"
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import dynamic from "next/dynamic";
+import React from "react";
+import "react-toastify/dist/ReactToastify.css";
+import Modal from "react-modal";
+import "tailwindcss/tailwind.css";
+import Image from "next/image";
+import useGameCore from "@/hooks/useGameCore";
+import { CircularProgressbar } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 
 const WalletDisconnectButtonDynamic = dynamic(
   async () =>
     (await import("@solana/wallet-adapter-react-ui")).WalletDisconnectButton,
   { ssr: false }
-)
+);
 const WalletMultiButtonDynamic = dynamic(
   async () =>
     (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
   { ssr: false }
-)
+);
 
 const LandingPage: React.FC = () => {
-  const wallet = useAnchorWallet()
+  const wallet = useAnchorWallet();
   const {
     balance,
     palace,
@@ -31,90 +33,99 @@ const LandingPage: React.FC = () => {
     handleCollectResourcesButtonClick,
     handleUpgradePalaceButtonClick,
     handleHireButtonClick,
-  } = useGameCore()
+  } = useGameCore();
 
   // Palace Modal state variables
-  const [isPalaceModalOpen, setIsPalaceModalOpen] = React.useState(false)
+  const [isPalaceModalOpen, setIsPalaceModalOpen] = React.useState(false);
   const openPalaceModal = () => {
-    setIsPalaceModalOpen(true)
-  }
+    setIsPalaceModalOpen(true);
+  };
   const closePalaceModal = () => {
-    setIsPalaceModalOpen(false)
-  }
+    setIsPalaceModalOpen(false);
+  };
   // Fire Modal state variables
-  const [isFireModalOpen, setIsFireModalOpen] = React.useState(false)
+  const [isFireModalOpen, setIsFireModalOpen] = React.useState(false);
   const openFireModal = () => {
-    setIsFireModalOpen(true)
-  }
+    setIsFireModalOpen(true);
+  };
   const closeFireModal = () => {
-    setIsFireModalOpen(false)
-  }
+    setIsFireModalOpen(false);
+  };
   // Ice Modal state variables
-  const [isIceModalOpen, setIsIceModalOpen] = React.useState(false)
+  const [isIceModalOpen, setIsIceModalOpen] = React.useState(false);
   const openIceModal = () => {
-    setIsIceModalOpen(true)
-  }
+    setIsIceModalOpen(true);
+  };
   const closeIceModal = () => {
-    setIsIceModalOpen(false)
-  }
+    setIsIceModalOpen(false);
+  };
   // Lightning Modal state variables
-  const [isLightningModalOpen, setIsLightningModalOpen] = React.useState(false)
+  const [isLightningModalOpen, setIsLightningModalOpen] = React.useState(false);
   const openLightningModal = () => {
-    setIsLightningModalOpen(true)
-  }
+    setIsLightningModalOpen(true);
+  };
   const closeLightningModal = () => {
-    setIsLightningModalOpen(false)
-  }
+    setIsLightningModalOpen(false);
+  };
   // Earth Modal state variables
-  const [isEarthModalOpen, setIsEarthModalOpen] = React.useState(false)
+  const [isEarthModalOpen, setIsEarthModalOpen] = React.useState(false);
   const openEarthModal = () => {
-    setIsEarthModalOpen(true)
-  }
+    setIsEarthModalOpen(true);
+  };
   const closeEarthModal = () => {
-    setIsEarthModalOpen(false)
-  }
+    setIsEarthModalOpen(false);
+  };
 
   const palaceTitleStyles = {
-    backgroundImage: `url('https://media.discordapp.net/attachments/1152274140141735936/1159655519401812048/title.png')`,
+    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1160759896459976745/palace_title.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  }
-
+  };
+  const initializePalaceButtonStyles = {
+    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159850712352702485/plank_18.png')`,
+    backgroundSize: "100% 100%",
+    backgroundRepeat: "no-repeat",
+  };
   const palaceUpgradeButtonStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655934977650870/plank_15.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  }
+  };
+  const palaceMainInfoStyles = {
+    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1160754915199696967/frame_k_06.png')`,
+    backgroundSize: "100% 100%",
+    backgroundRepeat: "no-repeat",
+  };
   const collectAndHireBoxStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159682151835512893/frame.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  }
+  };
   const collectTokensButtonStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655518407753778/plank_13.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  }
+  };
   const collectResourcesButtonStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655518638448781/plank_14.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  }
+  };
   const hireMinersButtonStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655518873342102/plank_16.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  }
+  };
   const hireLumberjacksButtonStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655518873342102/plank_16.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  }
+  };
 
   const palaceModalStyles = {
     content: {
-      width: "80%",
-      height: "85%",
+      width: "95%",
+      height: "95%",
       top: "50%",
       left: "50%",
       right: "auto",
@@ -130,7 +141,7 @@ const LandingPage: React.FC = () => {
     overlay: {
       backgroundColor: "rgba(0, 0, 0, 0.75)",
     },
-  }
+  };
   const pledgeModalStyles = {
     content: {
       width: "40%",
@@ -146,7 +157,7 @@ const LandingPage: React.FC = () => {
     overlay: {
       backgroundColor: "rgba(0, 0, 0, 0.75)",
     },
-  }
+  };
 
   return (
     // Main Game Page
@@ -173,7 +184,9 @@ const LandingPage: React.FC = () => {
       {/* Palace Image/Button */}
 
       <Image
-        src="https://cdn.discordapp.com/attachments/939309405227339776/1157085202770825276/Palace.png"
+        src={
+          "https://cdn.discordapp.com/attachments/939309405227339776/1157085202770825276/Palace.png"
+        }
         width={275}
         height={275}
         onClick={() => openPalaceModal()}
@@ -187,70 +200,101 @@ const LandingPage: React.FC = () => {
         onRequestClose={closePalaceModal}
         style={palaceModalStyles}
       >
-        <div className="">
+        <div className="font-eagle">
           {/* Palace name and image */}
 
           <div className="flex flex-col">
-            <div className="self-center" style={palaceTitleStyles}>
-              <p className="text-black text-3xl text-center font-bold pb-5 px-24">
-                Palace
-              </p>
+            <div
+              style={palaceMainInfoStyles}
+              className="self-center flex flex-col mt-2 pb-14"
+            >
+              <Image
+                className="self-center mb-6"
+                src={
+                  "https://cdn.discordapp.com/attachments/1152274140141735936/1160769786695909407/palace_title.png"
+                }
+                width={400}
+                height={400}
+                alt="Palace Title"
+              />
+
+              <Image
+                className="self-center"
+                src={
+                  wallet && player && palace!.level < 15
+                    ? "https://cdn.discordapp.com/attachments/939309405227339776/1157085202770825276/Palace.png"
+                    : wallet && player && palace!.level < 30
+                    ? "https://cdn.discordapp.com/attachments/1152274140141735936/1160767190887301140/palace_2.png"
+                    : wallet && player && palace!.level < 45
+                    ? "https://cdn.discordapp.com/attachments/1152274140141735936/1160765588017254540/palace_3.png"
+                    : "https://cdn.discordapp.com/attachments/939309405227339776/1157085202770825276/Palace.png"
+                }
+                width={200}
+                height={200}
+                alt="Palace"
+              />
+              {wallet && !player ? (
+                // Initialize Palace Button
+
+                <button
+                  className="flex flex-col self-center px-6 py-3 text-lg text-black font-bold"
+                  style={initializePalaceButtonStyles}
+                  onClick={handleSignupButtonClick}
+                >
+                  Initialize
+                </button>
+              ) : null}
+
+              {wallet && player ? (
+                <>
+                  {/* Palace Level */}
+
+                  <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center">
+                    <div className="flex self-center">
+                      <p className="mr-3">Level: </p>
+                      <p className="font-sans">{palace?.level}</p>
+                    </div>
+                    {/* Upgrade Palace Button */}
+                    <button
+                      style={palaceUpgradeButtonStyles}
+                      className="m-0.5 px-6 py-3 text-base"
+                      onClick={handleUpgradePalaceButtonClick}
+                    >
+                      <div className="flex justify-center items-center mx-2">
+                        <p className="mr-2">Upgrade</p>
+                        <div className="w-12 h-12 font-sans">
+                          <CircularProgressbar
+                            value={+player.gold + +player.lumber}
+                            maxValue={palace!.level * 1500}
+                            text={`${
+                              Math.floor(
+                                ((+player.lumber + +player.gold) /
+                                  (palace!.level * 1500)) *
+                                  100
+                              ) <= 100
+                                ? Math.floor(
+                                    ((+player.lumber + +player.gold) /
+                                      (palace!.level * 1500)) *
+                                      100
+                                  )
+                                : 100
+                            }%`}
+                          />
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                </>
+              ) : null}
             </div>
-
-            <Image
-              className="self-center"
-              src={
-                "https://cdn.discordapp.com/attachments/939309405227339776/1157085202770825276/Palace.png"
-              }
-              width={200}
-              height={200}
-              alt=""
-            />
-            {wallet && !player ? (
-              // Initialize Palace Button
-
-              <button
-                style={{
-                  margin: "20px 0",
-                }}
-                onClick={handleSignupButtonClick}
-              >
-                initialize
-              </button>
-            ) : null}
-
             {wallet && player ? (
               <>
-                {/* Palace Level */}
-
-                <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center  ">
-                  <p>Level: {palace?.level}</p>
-                  {/* Upgrade Palace Button */}
-                  <button
-                    style={palaceUpgradeButtonStyles}
-                    className="m-0.5 px-6 py-3 text-base"
-                    onClick={handleUpgradePalaceButtonClick}
-                  >
-                    <p>Upgrade</p>
-                  </button>
-
-                  <p className="text-xs">Next Level Cost:</p>
-                  <p className="text-xs">
-                    {palace!.level * 1000} Gold + {palace!.level * 500} Lumber
-                  </p>
-                </div>
-              </>
-            ) : null}
-
-            <div
-              style={collectAndHireBoxStyles}
-              className="flex flex-col self-center p-5"
-            >
-              <div className="flex text-gray-400 text-center p-1 font-bold">
-                {/* Palace Dashboard */}
-
-                {wallet && player ? (
-                  <>
+                <div
+                  style={collectAndHireBoxStyles}
+                  className="flex flex-col self-center p-5 mt-4"
+                >
+                  <div className="flex text-gray-400 text-center p-1 font-bold">
+                    {/* Resource Collection and Workforce */}
                     <div className="flex flex-col">
                       <div>
                         <div className="flex mb-1 justify-evenly">
@@ -258,22 +302,37 @@ const LandingPage: React.FC = () => {
 
                           <div className="">
                             <h3 className="text-lg">GWEN</h3>
-                            <h3>{balance}</h3>
+                            <h3 className="font-sans">{balance}</h3>
                             {/* Collect Tokens Button */}
 
                             <button
                               style={collectTokensButtonStyles}
-                              className="m-0.5 px-6 py-3 text-base"
+                              className="m-2 px-3 py-3 text-base"
                               onClick={handleCollectTokensButtonClick}
                             >
-                              <div className="p-0.5 text-black">Collect</div>
+                              <div className="flex justify-center items-center">
+                                <p className="mr-2 text-black">Collect</p>
+                                <div className="w-12 h-12 font-sans">
+                                  <CircularProgressbar
+                                    value={
+                                      (Math.floor(Date.now() / 1000) -
+                                        palace!.lastMintTimestamp) *
+                                      10 *
+                                      palace!.level
+                                    }
+                                    maxValue={86400 * 10 * palace!.level}
+                                    text={`${Math.floor(
+                                      (((Math.floor(Date.now() / 1000) -
+                                        palace!.lastMintTimestamp) *
+                                        10 *
+                                        palace!.level) /
+                                        (86400 * 10 * palace!.level)) *
+                                        100
+                                    )}%`}
+                                  />
+                                </div>
+                              </div>
                             </button>
-                            <div>
-                              <p className="text-xs text-gray-600">x GWEN</p>
-                              <p className="text-xs text-gray-600">
-                                ready to Collect
-                              </p>
-                            </div>
                           </div>
 
                           <div>
@@ -282,14 +341,18 @@ const LandingPage: React.FC = () => {
 
                               <div className="px-1">
                                 <h3 className="text-lg">Gold</h3>
-                                <h3>{player?.gold.toNumber()}</h3>
+                                <h3 className="font-sans">
+                                  {player?.gold.toNumber()}
+                                </h3>
                               </div>
 
                               {/* Lumber Amount */}
 
                               <div className="px-1">
                                 <h3 className="text-lg">Lumber</h3>
-                                <h3>{player?.lumber.toNumber()}</h3>
+                                <h3 className="font-sans">
+                                  {player?.lumber.toNumber()}
+                                </h3>
                               </div>
                             </div>
                             <div>
@@ -297,20 +360,34 @@ const LandingPage: React.FC = () => {
 
                               <button
                                 style={collectResourcesButtonStyles}
-                                className="m-0.5 px-6 py-3 text-base"
+                                className="m-2 px-3 py-3 text-black"
                                 onClick={handleCollectResourcesButtonClick}
                               >
-                                <div className="p-0.5 text-black">Collect</div>
+                                <div className="flex justify-center items-center">
+                                  <p className="mr-2 text-black">Collect</p>
+                                  <div className="w-12 h-12 font-sans">
+                                    <CircularProgressbar
+                                      value={
+                                        (Math.floor(Date.now() / 1000) -
+                                          palace!
+                                            .lastResourceCollectionTimestamp) *
+                                          player!.miners || 0
+                                      }
+                                      maxValue={86400 * player!.miners || 1}
+                                      text={`${
+                                        Math.floor(
+                                          (((Math.floor(Date.now() / 1000) -
+                                            palace!
+                                              .lastResourceCollectionTimestamp) *
+                                            player!.miners) /
+                                            (86400 * player!.miners)) *
+                                            100
+                                        ) || 0
+                                      }%`}
+                                    />
+                                  </div>
+                                </div>
                               </button>
-                            </div>
-                            <div>
-                              <p className="text-xs text-gray-600">
-                                {player?.miners * 3} Gold +{" "}
-                                {player?.lumberjacks * 3} Lumber
-                              </p>
-                              <p className="text-xs text-gray-600">
-                                each Collect
-                              </p>
                             </div>
                           </div>
                         </div>
@@ -321,56 +398,50 @@ const LandingPage: React.FC = () => {
 
                           <h3>Miners</h3>
 
-                          <h3>{player?.miners.toNumber()}</h3>
+                          <h3 className="font-sans">
+                            {player?.miners.toNumber()}
+                          </h3>
 
                           {/* Hire Miners Button */}
 
                           <button
                             style={hireMinersButtonStyles}
-                            className="m-0.5 px-6 py-3 text-base"
+                            className="m-2 px-6 py-3 text-base"
                             onClick={() => handleHireButtonClick("Miner")}
                           >
                             <div className="p-0.5 text-black">Hire</div>
                           </button>
-                          <div>
-                            <p className="text-xs text-gray-600">10 Miners</p>
-                            <p className="text-xs text-gray-600">@ 500 Gwen</p>
-                          </div>
                         </div>
                         <div>
                           {/* Lumberjacks value */}
 
                           <h3>Lumberjacks</h3>
 
-                          <h3>{player?.lumberjacks.toNumber()}</h3>
+                          <h3 className="font-sans">
+                            {player?.lumberjacks.toNumber()}
+                          </h3>
 
                           {/* Hire Lumberjacks Button */}
 
                           <button
                             style={hireLumberjacksButtonStyles}
-                            className="m-0.5 px-6 py-3 text-base"
+                            className="m-2 px-6 py-3 text-base"
                             onClick={() => handleHireButtonClick("Lumberjack")}
                           >
                             <div className="p-0.5 text-black">Hire</div>
                           </button>
-                          <div>
-                            <p className="text-xs text-gray-600">
-                              10 Lumberjacks
-                            </p>
-                            <p className="text-xs text-gray-600">@ 1000 Gwen</p>
-                          </div>
                         </div>
                       </div>
                     </div>
-                  </>
-                ) : null}
-              </div>
-            </div>
+                  </div>
+                </div>
+              </>
+            ) : null}
           </div>
         </div>
       </Modal>
     </div>
-  )
-}
+  );
+};
 
-export default LandingPage
+export default LandingPage;
