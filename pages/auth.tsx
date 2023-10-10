@@ -171,7 +171,7 @@ export default function Auth(props: Props) {
                 <Button type="submit">Login</Button>
               </Flex>
             </form>
-            <Text mt="8px">Or:</Text>
+            {/* <Text mt="8px">Or:</Text>
             <div>
               {!publicKey ? (
                 <WalletMultiButtonDynamic
@@ -189,7 +189,7 @@ export default function Auth(props: Props) {
                   }}
                 />
               )}
-            </div>
+            </div> */}
           </Flex>
         </TabPanel>
         <TabPanel>
@@ -231,7 +231,7 @@ export default function Auth(props: Props) {
                 <Button type="submit">Sign Up</Button>
               </Flex>
             </form>
-            <Text mt="8px">Or:</Text>
+            {/* <Text mt="8px">Or:</Text>
             <div>
               {!publicKey ? (
                 <WalletMultiButtonDynamic
@@ -249,7 +249,7 @@ export default function Auth(props: Props) {
                   }}
                 />
               )}
-            </div>
+            </div> */}
           </Flex>
         </TabPanel>
       </Tabs>
