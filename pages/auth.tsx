@@ -6,9 +6,9 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs"
 import "react-tabs/style/react-tabs.css"
 import { toast } from "react-toastify"
 import { Button, Flex, Heading, Input, Label, Text } from "theme-ui"
-import { NextPageContext } from "next"
-import { verify } from "jsonwebtoken"
 import { useRouter } from "next/router"
+import { getInitialAuthProps } from "@/utils/auth"
+import useAuthorization from "@/hooks/useAuthorization"
 
 type Props = {
   authorized: boolean | null
@@ -27,29 +27,10 @@ const WalletMultiButtonDynamic = dynamic(
 
 export default function Auth(props: Props) {
   const { publicKey } = useWallet()
-  const { reload } = useRouter()
-  const [authorized, setAuthorized] = useState<boolean | null>(props.authorized)
+  const { push, reload } = useRouter()
+  const { authorized } = useAuthorization(props.authorized)
 
-  useEffect(() => {
-    const fetchAuthorization = async () => {
-      const resRaw = await fetch("/api/check-auth", {
-        credentials: "same-origin",
-      })
-
-      if (!resRaw.ok) {
-        setAuthorized(false)
-        return
-      }
-
-      setAuthorized(true)
-    }
-
-    if (props.authorized === null) {
-      fetchAuthorization()
-    } else {
-    }
-  }, [props.authorized])
-
+  console.log(authorized)
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -115,7 +96,7 @@ export default function Auth(props: Props) {
       const { message } = resJson
 
       toast(message, { type: "success" })
-      reload()
+      push("/game")
     } catch (e) {
       console.error(e)
 
@@ -128,7 +109,7 @@ export default function Auth(props: Props) {
       <Heading>Auth</Heading>
       <Text>Sign up or login to start your adventure</Text>
       isLoggedIn:{" "}
-      {authorized === null ? "loading..." : JSON.stringify(props.authorized)}
+      {authorized === null ? "loading..." : JSON.stringify(authorized)}
       {authorized && (
         <Button
           onClick={async () => {
@@ -276,30 +257,7 @@ export default function Auth(props: Props) {
   )
 }
 
-Auth.getInitialProps = async (ctx: NextPageContext) => {
-  // server side
-  if (ctx.req) {
-    try {
-      const cookies = ctx.req.headers.cookie
-      const authToken = cookies
-        ?.split(";")
-        .find((c) => c.trim().startsWith("authToken="))
-        ?.split("=")[1]
-
-      if (!authToken) return { authorized: false }
-
-      const decoded = verify(authToken, process.env.JWT_SECRET as string)
-
-      if (!decoded) return { authorized: false }
-    } catch (e) {
-      return { authorized: false }
-    }
-
-    return { authorized: true }
-  } else {
-    return { authorized: null }
-  }
-}
+Auth.getInitialProps = getInitialAuthProps
 
 export const SolanaIcon = () => (
   <svg width="96" fill="none" className="my-5" viewBox="0 0 323 48">

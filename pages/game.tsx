@@ -10,6 +10,9 @@ import Image from "next/image"
 import useGameCore from "@/hooks/useGameCore"
 import { CircularProgressbar } from "react-circular-progressbar"
 import "react-circular-progressbar/dist/styles.css"
+import { AuthProps, getInitialAuthProps } from "@/utils/auth"
+import { Button } from "theme-ui"
+import Link from "next/link"
 
 const WalletDisconnectButtonDynamic = dynamic(
   async () =>
@@ -27,7 +30,9 @@ const CameraViewer = dynamic(
   { ssr: false }
 )
 
-const LandingPage: React.FC = () => {
+type GamePageProps = {} & AuthProps
+
+const GamePage = ({ authorized }: GamePageProps) => {
   const wallet = useAnchorWallet()
   const {
     balance,
@@ -182,8 +187,11 @@ const LandingPage: React.FC = () => {
         openPalaceModal={openPalaceModal}
       />{" "}
       <div className="align-top justify-end absolute left-4 top-4">
-        <WalletMultiButtonDynamic />
-        <WalletDisconnectButtonDynamic />
+        {authorized === false ? (
+          <Link href="/auth">
+            <Button>Login</Button>
+          </Link>
+        ) : null}
       </div>
       {/* Palace Modal */}
       <Modal
@@ -435,4 +443,5 @@ const LandingPage: React.FC = () => {
   )
 }
 
-export default LandingPage
+GamePage.getInitialProps = getInitialAuthProps
+export default GamePage
