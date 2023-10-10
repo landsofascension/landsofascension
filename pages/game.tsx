@@ -1,29 +1,34 @@
-"use client";
+"use client"
 
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
-import dynamic from "next/dynamic";
-import React from "react";
-import "react-toastify/dist/ReactToastify.css";
-import Modal from "react-modal";
-import "tailwindcss/tailwind.css";
-import Image from "next/image";
-import useGameCore from "@/hooks/useGameCore";
-import { CircularProgressbar } from "react-circular-progressbar";
-import "react-circular-progressbar/dist/styles.css";
+import { useAnchorWallet } from "@solana/wallet-adapter-react"
+import dynamic from "next/dynamic"
+import React from "react"
+import "react-toastify/dist/ReactToastify.css"
+import Modal from "react-modal"
+import "tailwindcss/tailwind.css"
+import Image from "next/image"
+import useGameCore from "@/hooks/useGameCore"
+import { CircularProgressbar } from "react-circular-progressbar"
+import "react-circular-progressbar/dist/styles.css"
 
 const WalletDisconnectButtonDynamic = dynamic(
   async () =>
     (await import("@solana/wallet-adapter-react-ui")).WalletDisconnectButton,
   { ssr: false }
-);
+)
 const WalletMultiButtonDynamic = dynamic(
   async () =>
     (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
   { ssr: false }
-);
+)
+
+const CameraViewer = dynamic(
+  async () => (await import("@/app/CameraViewer")).default,
+  { ssr: false }
+)
 
 const LandingPage: React.FC = () => {
-  const wallet = useAnchorWallet();
+  const wallet = useAnchorWallet()
   const {
     balance,
     palace,
@@ -33,94 +38,94 @@ const LandingPage: React.FC = () => {
     handleCollectResourcesButtonClick,
     handleUpgradePalaceButtonClick,
     handleHireButtonClick,
-  } = useGameCore();
+  } = useGameCore()
 
   // Palace Modal state variables
-  const [isPalaceModalOpen, setIsPalaceModalOpen] = React.useState(false);
+  const [isPalaceModalOpen, setIsPalaceModalOpen] = React.useState(false)
   const openPalaceModal = () => {
-    setIsPalaceModalOpen(true);
-  };
+    setIsPalaceModalOpen(true)
+  }
   const closePalaceModal = () => {
-    setIsPalaceModalOpen(false);
-  };
+    setIsPalaceModalOpen(false)
+  }
   // Fire Modal state variables
-  const [isFireModalOpen, setIsFireModalOpen] = React.useState(false);
+  const [isFireModalOpen, setIsFireModalOpen] = React.useState(false)
   const openFireModal = () => {
-    setIsFireModalOpen(true);
-  };
+    setIsFireModalOpen(true)
+  }
   const closeFireModal = () => {
-    setIsFireModalOpen(false);
-  };
+    setIsFireModalOpen(false)
+  }
   // Ice Modal state variables
-  const [isIceModalOpen, setIsIceModalOpen] = React.useState(false);
+  const [isIceModalOpen, setIsIceModalOpen] = React.useState(false)
   const openIceModal = () => {
-    setIsIceModalOpen(true);
-  };
+    setIsIceModalOpen(true)
+  }
   const closeIceModal = () => {
-    setIsIceModalOpen(false);
-  };
+    setIsIceModalOpen(false)
+  }
   // Lightning Modal state variables
-  const [isLightningModalOpen, setIsLightningModalOpen] = React.useState(false);
+  const [isLightningModalOpen, setIsLightningModalOpen] = React.useState(false)
   const openLightningModal = () => {
-    setIsLightningModalOpen(true);
-  };
+    setIsLightningModalOpen(true)
+  }
   const closeLightningModal = () => {
-    setIsLightningModalOpen(false);
-  };
+    setIsLightningModalOpen(false)
+  }
   // Earth Modal state variables
-  const [isEarthModalOpen, setIsEarthModalOpen] = React.useState(false);
+  const [isEarthModalOpen, setIsEarthModalOpen] = React.useState(false)
   const openEarthModal = () => {
-    setIsEarthModalOpen(true);
-  };
+    setIsEarthModalOpen(true)
+  }
   const closeEarthModal = () => {
-    setIsEarthModalOpen(false);
-  };
+    setIsEarthModalOpen(false)
+  }
 
   const palaceTitleStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1160759896459976745/palace_title.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  };
+  }
   const initializePalaceButtonStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159850712352702485/plank_18.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  };
+  }
   const palaceUpgradeButtonStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655934977650870/plank_15.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  };
+  }
   const palaceMainInfoStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1160754915199696967/frame_k_06.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  };
+  }
   const collectAndHireBoxStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159682151835512893/frame.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  };
+  }
   const collectTokensButtonStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655518407753778/plank_13.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  };
+  }
   const collectResourcesButtonStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655518638448781/plank_14.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  };
+  }
   const hireMinersButtonStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655518873342102/plank_16.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  };
+  }
   const hireLumberjacksButtonStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655518873342102/plank_16.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  };
+  }
 
   const palaceModalStyles = {
     content: {
@@ -141,7 +146,7 @@ const LandingPage: React.FC = () => {
     overlay: {
       backgroundColor: "rgba(0, 0, 0, 0.75)",
     },
-  };
+  }
   const pledgeModalStyles = {
     content: {
       width: "40%",
@@ -157,44 +162,30 @@ const LandingPage: React.FC = () => {
     overlay: {
       backgroundColor: "rgba(0, 0, 0, 0.75)",
     },
-  };
+  }
 
   return (
     // Main Game Page
     <div
       className="flex flex-col"
       style={{
-        backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1155882003388973127/Sunntabaile_-_City_Map.jpg')`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        height: "100vh",
-        width: "100vw",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        overflow: "hidden",
+        width: "100vw",
+        height: "100vh",
       }}
     >
-      {/* Wallet Buttons */}
-
-      <div className="align-top justify-end">
+      <CameraViewer
+        imageUrl="/royal_palace.jpg"
+        openPalaceModal={openPalaceModal}
+      />{" "}
+      <div className="align-top justify-end absolute left-4 top-4">
         <WalletMultiButtonDynamic />
         <WalletDisconnectButtonDynamic />
       </div>
-
-      {/* Palace Image/Button */}
-
-      <Image
-        src={
-          "https://cdn.discordapp.com/attachments/939309405227339776/1157085202770825276/Palace.png"
-        }
-        width={275}
-        height={275}
-        onClick={() => openPalaceModal()}
-        alt=""
-      />
-
       {/* Palace Modal */}
-
       <Modal
         isOpen={isPalaceModalOpen}
         onRequestClose={closePalaceModal}
@@ -441,7 +432,7 @@ const LandingPage: React.FC = () => {
         </div>
       </Modal>
     </div>
-  );
-};
+  )
+}
 
-export default LandingPage;
+export default LandingPage
