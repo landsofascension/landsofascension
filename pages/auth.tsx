@@ -9,6 +9,7 @@ import { Button, Flex, Heading, Input, Label, Text } from "theme-ui"
 import { useRouter } from "next/router"
 import { getInitialAuthProps } from "@/utils/auth"
 import useAuthorization from "@/hooks/useAuthorization"
+import { callProgramMethod } from "@/lib/game_core"
 
 type Props = {
   authorized: boolean | null
@@ -26,7 +27,6 @@ const WalletMultiButtonDynamic = dynamic(
 )
 
 export default function Auth(props: Props) {
-  const { publicKey } = useWallet()
   const { push, reload } = useRouter()
   const { authorized } = useAuthorization(props.authorized)
 
@@ -42,24 +42,13 @@ export default function Auth(props: Props) {
 
       if (!username || !password) throw new Error("Please, fill all the fields")
 
-      const resRaw = await fetch("/api/signup", {
-        method: "POST",
-        body: JSON.stringify({
-          username,
-          password,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const { message, txId } = await callProgramMethod("signUpPlayer", {
+        username,
+        password,
       })
 
-      const resJson = await resRaw.json()
-
-      if (!resRaw.ok) throw new Error(resJson.message)
-
-      const { message } = resJson
-
       toast(message, { type: "success" })
+      console.log(txId)
     } catch (e) {
       console.error(e)
 

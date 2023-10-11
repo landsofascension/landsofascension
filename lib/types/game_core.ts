@@ -17,9 +17,9 @@ export type GameCore = {
                 "value": "player"
               },
               {
-                "kind": "account",
-                "type": "publicKey",
-                "path": "signer"
+                "kind": "arg",
+                "type": "string",
+                "path": "username"
               }
             ]
           }
@@ -38,7 +38,8 @@ export type GameCore = {
               {
                 "kind": "account",
                 "type": "publicKey",
-                "path": "signer"
+                "account": "Player",
+                "path": "player"
               }
             ]
           }
@@ -57,7 +58,8 @@ export type GameCore = {
               {
                 "kind": "account",
                 "type": "publicKey",
-                "path": "signer"
+                "account": "Player",
+                "path": "player"
               }
             ]
           }
@@ -76,7 +78,8 @@ export type GameCore = {
               {
                 "kind": "account",
                 "type": "publicKey",
-                "path": "signer"
+                "account": "Player",
+                "path": "player"
               }
             ]
           }
@@ -111,7 +114,12 @@ export type GameCore = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "username",
+          "type": "string"
+        }
+      ]
     },
     {
       "name": "purchaseMerchantItem",
@@ -119,21 +127,7 @@ export type GameCore = {
         {
           "name": "player",
           "isMut": true,
-          "isSigner": false,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "type": "string",
-                "value": "player"
-              },
-              {
-                "kind": "account",
-                "type": "publicKey",
-                "path": "owner"
-              }
-            ]
-          }
+          "isSigner": false
         },
         {
           "name": "playerMerchant",
@@ -149,7 +143,8 @@ export type GameCore = {
               {
                 "kind": "account",
                 "type": "publicKey",
-                "path": "owner"
+                "account": "Player",
+                "path": "player"
               }
             ]
           }
@@ -168,15 +163,11 @@ export type GameCore = {
               {
                 "kind": "account",
                 "type": "publicKey",
-                "path": "owner"
+                "account": "Player",
+                "path": "player"
               }
             ]
           }
-        },
-        {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": false
         },
         {
           "name": "mint",
@@ -201,6 +192,11 @@ export type GameCore = {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
         }
       ],
       "args": [
@@ -218,6 +214,11 @@ export type GameCore = {
       "name": "upgradePlayerPalace",
       "accounts": [
         {
+          "name": "player",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "playerPalace",
           "isMut": true,
           "isSigner": false,
@@ -231,31 +232,8 @@ export type GameCore = {
               {
                 "kind": "account",
                 "type": "publicKey",
-                "path": "owner"
-              }
-            ]
-          }
-        },
-        {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "player",
-          "isMut": true,
-          "isSigner": false,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "type": "string",
-                "value": "player"
-              },
-              {
-                "kind": "account",
-                "type": "publicKey",
-                "path": "owner"
+                "account": "Player",
+                "path": "player"
               }
             ]
           }
@@ -264,6 +242,11 @@ export type GameCore = {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
         }
       ],
       "args": []
@@ -307,8 +290,8 @@ export type GameCore = {
       "name": "collectPalaceTokens",
       "accounts": [
         {
-          "name": "owner",
-          "isMut": false,
+          "name": "player",
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -339,7 +322,8 @@ export type GameCore = {
               {
                 "kind": "account",
                 "type": "publicKey",
-                "path": "owner"
+                "account": "Player",
+                "path": "player"
               }
             ]
           }
@@ -358,7 +342,8 @@ export type GameCore = {
               {
                 "kind": "account",
                 "type": "publicKey",
-                "path": "owner"
+                "account": "Player",
+                "path": "player"
               }
             ]
           }
@@ -367,6 +352,11 @@ export type GameCore = {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
         }
       ],
       "args": []
@@ -375,33 +365,19 @@ export type GameCore = {
       "name": "collectPlayerResources",
       "accounts": [
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
           "name": "player",
           "isMut": true,
-          "isSigner": false,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "type": "string",
-                "value": "player"
-              },
-              {
-                "kind": "account",
-                "type": "publicKey",
-                "path": "owner"
-              }
-            ]
-          }
+          "isSigner": false
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
         }
       ],
       "args": []
@@ -413,6 +389,10 @@ export type GameCore = {
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "username",
+            "type": "string"
+          },
           {
             "name": "experience",
             "type": "u64"
@@ -485,6 +465,11 @@ export type GameCore = {
       "code": 6003,
       "name": "CouldNotBurnTokens",
       "msg": "Could not burn tokens"
+    },
+    {
+      "code": 6004,
+      "name": "Unauthorized",
+      "msg": "Unauthorized"
     }
   ]
 };
@@ -508,9 +493,9 @@ export const IDL: GameCore = {
                 "value": "player"
               },
               {
-                "kind": "account",
-                "type": "publicKey",
-                "path": "signer"
+                "kind": "arg",
+                "type": "string",
+                "path": "username"
               }
             ]
           }
@@ -529,7 +514,8 @@ export const IDL: GameCore = {
               {
                 "kind": "account",
                 "type": "publicKey",
-                "path": "signer"
+                "account": "Player",
+                "path": "player"
               }
             ]
           }
@@ -548,7 +534,8 @@ export const IDL: GameCore = {
               {
                 "kind": "account",
                 "type": "publicKey",
-                "path": "signer"
+                "account": "Player",
+                "path": "player"
               }
             ]
           }
@@ -567,7 +554,8 @@ export const IDL: GameCore = {
               {
                 "kind": "account",
                 "type": "publicKey",
-                "path": "signer"
+                "account": "Player",
+                "path": "player"
               }
             ]
           }
@@ -602,7 +590,12 @@ export const IDL: GameCore = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "username",
+          "type": "string"
+        }
+      ]
     },
     {
       "name": "purchaseMerchantItem",
@@ -610,21 +603,7 @@ export const IDL: GameCore = {
         {
           "name": "player",
           "isMut": true,
-          "isSigner": false,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "type": "string",
-                "value": "player"
-              },
-              {
-                "kind": "account",
-                "type": "publicKey",
-                "path": "owner"
-              }
-            ]
-          }
+          "isSigner": false
         },
         {
           "name": "playerMerchant",
@@ -640,7 +619,8 @@ export const IDL: GameCore = {
               {
                 "kind": "account",
                 "type": "publicKey",
-                "path": "owner"
+                "account": "Player",
+                "path": "player"
               }
             ]
           }
@@ -659,15 +639,11 @@ export const IDL: GameCore = {
               {
                 "kind": "account",
                 "type": "publicKey",
-                "path": "owner"
+                "account": "Player",
+                "path": "player"
               }
             ]
           }
-        },
-        {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": false
         },
         {
           "name": "mint",
@@ -692,6 +668,11 @@ export const IDL: GameCore = {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
         }
       ],
       "args": [
@@ -709,6 +690,11 @@ export const IDL: GameCore = {
       "name": "upgradePlayerPalace",
       "accounts": [
         {
+          "name": "player",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "playerPalace",
           "isMut": true,
           "isSigner": false,
@@ -722,31 +708,8 @@ export const IDL: GameCore = {
               {
                 "kind": "account",
                 "type": "publicKey",
-                "path": "owner"
-              }
-            ]
-          }
-        },
-        {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "player",
-          "isMut": true,
-          "isSigner": false,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "type": "string",
-                "value": "player"
-              },
-              {
-                "kind": "account",
-                "type": "publicKey",
-                "path": "owner"
+                "account": "Player",
+                "path": "player"
               }
             ]
           }
@@ -755,6 +718,11 @@ export const IDL: GameCore = {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
         }
       ],
       "args": []
@@ -798,8 +766,8 @@ export const IDL: GameCore = {
       "name": "collectPalaceTokens",
       "accounts": [
         {
-          "name": "owner",
-          "isMut": false,
+          "name": "player",
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -830,7 +798,8 @@ export const IDL: GameCore = {
               {
                 "kind": "account",
                 "type": "publicKey",
-                "path": "owner"
+                "account": "Player",
+                "path": "player"
               }
             ]
           }
@@ -849,7 +818,8 @@ export const IDL: GameCore = {
               {
                 "kind": "account",
                 "type": "publicKey",
-                "path": "owner"
+                "account": "Player",
+                "path": "player"
               }
             ]
           }
@@ -858,6 +828,11 @@ export const IDL: GameCore = {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
         }
       ],
       "args": []
@@ -866,33 +841,19 @@ export const IDL: GameCore = {
       "name": "collectPlayerResources",
       "accounts": [
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
           "name": "player",
           "isMut": true,
-          "isSigner": false,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "type": "string",
-                "value": "player"
-              },
-              {
-                "kind": "account",
-                "type": "publicKey",
-                "path": "owner"
-              }
-            ]
-          }
+          "isSigner": false
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
         }
       ],
       "args": []
@@ -904,6 +865,10 @@ export const IDL: GameCore = {
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "username",
+            "type": "string"
+          },
           {
             "name": "experience",
             "type": "u64"
@@ -976,6 +941,11 @@ export const IDL: GameCore = {
       "code": 6003,
       "name": "CouldNotBurnTokens",
       "msg": "Could not burn tokens"
+    },
+    {
+      "code": 6004,
+      "name": "Unauthorized",
+      "msg": "Unauthorized"
     }
   ]
 };

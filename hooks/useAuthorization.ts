@@ -23,7 +23,6 @@ export default function useAuthorization(
 
     if (initialAuthorized === null) {
       fetchAuthorization()
-    } else {
     }
   }, [initialAuthorized])
 

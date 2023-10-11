@@ -32,18 +32,17 @@ const CameraViewer = dynamic(
 
 type GamePageProps = {} & AuthProps
 
-const GamePage = ({ authorized }: GamePageProps) => {
+const GamePage = ({ authorized, username }: GamePageProps) => {
   const wallet = useAnchorWallet()
   const {
     balance,
     palace,
     player,
-    handleSignupButtonClick,
     handleCollectTokensButtonClick,
     handleCollectResourcesButtonClick,
     handleUpgradePalaceButtonClick,
     handleHireButtonClick,
-  } = useGameCore()
+  } = useGameCore(username)
 
   // Palace Modal state variables
   const [isPalaceModalOpen, setIsPalaceModalOpen] = React.useState(false)
@@ -232,19 +231,8 @@ const GamePage = ({ authorized }: GamePageProps) => {
                 height={200}
                 alt="Palace"
               />
-              {wallet && !player ? (
-                // Initialize Palace Button
 
-                <button
-                  className="flex flex-col self-center px-6 py-3 text-lg text-black font-bold"
-                  style={initializePalaceButtonStyles}
-                  onClick={handleSignupButtonClick}
-                >
-                  Initialize
-                </button>
-              ) : null}
-
-              {wallet && player ? (
+              {player ? (
                 <>
                   {/* Palace Level */}
 
@@ -286,7 +274,7 @@ const GamePage = ({ authorized }: GamePageProps) => {
                 </>
               ) : null}
             </div>
-            {wallet && player ? (
+            {player ? (
               <>
                 <div
                   style={collectAndHireBoxStyles}

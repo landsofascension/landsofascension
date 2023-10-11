@@ -1,4 +1,10 @@
 // nextjs api
+import { PROGRAM_ID } from "@/hooks/useGameCore"
+import { IDL } from "@/lib/types/game_core"
+import { buildAndSendTransactionInstructions } from "@/utils/transactions"
+import { AnchorProvider, Program, Wallet } from "@coral-xyz/anchor"
+import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes"
+import { Connection, Keypair } from "@solana/web3.js"
 import { kv } from "@vercel/kv"
 import { NextApiRequest, NextApiResponse } from "next"
 
@@ -6,35 +12,77 @@ export default async function SignUp(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { username, password } = req.body
+  try {
+    const { username, password } = req.body
 
-  const exists = await kv.get(username)
+    const exists = await kv.get(username)
 
-  if (exists) {
-    return res.status(400).json({ message: "User already exists" })
+    if (exists) {
+      return res.status(400).json({ message: "User already exists" })
+    }
+
+    const isUsernameValid = getIsUsernameValid(username)
+
+    if (!isUsernameValid) {
+      return res.status(400).json({
+        message:
+          "Invalid username. Only letters allowed (uppercase and lowercase), and optionally a dot or underscore in the middle.",
+      })
+    }
+
+    const isPasswordValid = getIsPasswordValid(password)
+
+    if (!isPasswordValid) {
+      return res.status(400).json({
+        message:
+          "Invalid password. It should include a mix of uppercase letters, lowercase letters, numbers, and special characters while also meeting a minimum length of 8 characters.",
+      })
+    }
+
+    // const response = await kv.set(username, password)
+
+    // Create on-chain vault from username.
+
+    // KP from base58 secret key
+    const gameAuthorityKeypair = Keypair.fromSecretKey(
+      bs58.decode(process.env.GAME_AUTHORITY_PRIVATE_KEY as string)
+    )
+
+    const connection = new Connection("http://localhost:8899", "confirmed")
+
+    const gameAuthorityWallet = {
+      publicKey: gameAuthorityKeypair.publicKey,
+    } as Wallet
+
+    const program = new Program(
+      IDL,
+      PROGRAM_ID,
+      new AnchorProvider(connection, gameAuthorityWallet, {})
+    )
+
+    const ix = await program.methods
+      .signUpPlayer(username)
+      .accounts({
+        signer: gameAuthorityKeypair.publicKey,
+      })
+      .signers([gameAuthorityKeypair])
+      .instruction()
+
+    const txid = await buildAndSendTransactionInstructions(
+      connection,
+      [ix],
+      gameAuthorityKeypair.publicKey,
+      {
+        signers: [gameAuthorityKeypair],
+      }
+    )
+
+    res.status(200).json({ message: "User signed up!", txid })
+  } catch (e) {
+    console.log(e)
+
+    return res.status(500).json({ message: "Internal server error. " + e })
   }
-
-  const isUsernameValid = getIsUsernameValid(username)
-
-  if (!isUsernameValid) {
-    return res.status(400).json({
-      message:
-        "Invalid username. Only letters allowed (uppercase and lowercase), and optionally a dot or underscore in the middle.",
-    })
-  }
-
-  const isPasswordValid = getIsPasswordValid(password)
-
-  if (!isPasswordValid) {
-    return res.status(400).json({
-      message:
-        "Invalid password. It should include a mix of uppercase letters, lowercase letters, numbers, and special characters while also meeting a minimum length of 8 characters.",
-    })
-  }
-
-  const response = await kv.set(username, password)
-
-  res.status(200).json({ message: "User signed up!", response })
 }
 
 function getIsUsernameValid(username: string) {
