@@ -26,12 +26,20 @@ const imageStyle: React.CSSProperties = {
 interface CameraViewerProps {
   imageUrl: string
   openPalaceModal: () => void
+  openLumbermillModal: () => void
+  openMineModal: () => void
+  openBarracksModal: () => void
+  openMerchantModal: () => void
 }
 
 const CameraViewer: React.FC<CameraViewerProps> = ({
   imageUrl,
   // @TODO improve way of passing this down
   openPalaceModal,
+  openLumbermillModal,
+  openMineModal,
+  openBarracksModal,
+  openMerchantModal,
 }) => {
   const [cameraPosition, setCameraPosition] = useState({ x: 0, y: 0 })
   const [isDragging, setIsDragging] = useState(false)
@@ -118,21 +126,92 @@ const CameraViewer: React.FC<CameraViewerProps> = ({
           ...cameraStyle,
           transform: `translate(${cameraPosition.x}px, ${cameraPosition.y}px)`,
         }}
-      >
+      >{/* Palace Button */}
         <span
           sx={{
             position: "absolute",
-            top: 800,
-            left: 1080,
-            width: "96px",
-            height: "96px",
-            borderRadius: "50%",
-            background: "rgb(222 145 60 / 64%)",
-            border: "1px solid rgb(222 145 60)",
+            top: 550,
+            left: 830,
+            width: "596px",
+            height: "596px",
+            borderRadius: "15%",
             zIndex: 1,
             cursor: "pointer",
+            ":hover": {
+              background: "rgb(0 0 0 / 36%)",
+            },
           }}
           onClick={() => openPalaceModal()}
+        ></span>
+        {/* Lumbermill Button */}
+        <span
+          sx={{
+            position: "absolute",
+            top: 1,
+            left: 330,
+            width: "196px",
+            height: "196px",
+            borderRadius: "15%",
+            background: "transparent",
+            zIndex: 1,
+            cursor: "pointer",
+            ":hover": {
+              background: "rgb(0 0 0 / 34%)",
+            },
+          }}
+          onClick={() => openLumbermillModal()}
+        ></span>
+        {/* Mine Button */}
+        <span
+          sx={{
+            position: "absolute",
+            top: 1,
+            left: 1860,
+            width: "166px",
+            height: "166px",
+            borderRadius: "15%",
+            background: "transparent",
+            zIndex: 1,
+            cursor: "pointer",
+            ":hover": {
+              background: "rgb(0 0 0 / 34%)",
+            },
+          }}
+          onClick={() => openMineModal()}
+        ></span>
+        {/* Barracks Button */}
+        <span
+          sx={{
+            position: "absolute",
+            top: 1520,
+            left: 1570,
+            width: "424px",
+            height: "296px",
+            borderRadius: "15%",
+            zIndex: 1,
+            cursor: "pointer",
+            ":hover": {
+              background: "rgb(0 0 0 / 34%)",
+            },
+          }}
+          onClick={() => openBarracksModal()}
+        ></span>
+        {/* Merchant Button */}
+        <span
+          sx={{
+            position: "absolute",
+            top: 1730,
+            left: 175,
+            width: "372px",
+            height: "272px",
+            borderRadius: "15%",
+            zIndex: 1,
+            cursor: "pointer",
+            ":hover": {
+              background: "rgb(0 0 0 / 34%)",
+            },
+          }}
+          onClick={() => openMerchantModal()}
         ></span>
         <img
           src={imageUrl}
