@@ -62,79 +62,80 @@ const GamePage = ({
   }
   // Lumbermill Modal state variables
   const [isLumbermillModalOpen, setIsLumbermillModalOpen] =
-    React.useState(false);
+    React.useState(false)
   const openLumbermillModal = () => {
-    setIsLumbermillModalOpen(true);
-  };
+    setIsLumbermillModalOpen(true)
+  }
   const closeLumbermillModal = () => {
-    setIsLumbermillModalOpen(false);
-  };
+    setIsLumbermillModalOpen(false)
+  }
   // Mine Modal state variables
-  const [isMineModalOpen, setIsMineModalOpen] = React.useState(false);
+  const [isMineModalOpen, setIsMineModalOpen] = React.useState(false)
   const openMineModal = () => {
-    setIsMineModalOpen(true);
-  };
+    setIsMineModalOpen(true)
+  }
   const closeMineModal = () => {
-    setIsMineModalOpen(false);
-  };
+    setIsMineModalOpen(false)
+  }
   // Barracks Modal state variables
-  const [isBarracksModalOpen, setIsBarracksModalOpen] = React.useState(false);
+  const [isBarracksModalOpen, setIsBarracksModalOpen] = React.useState(false)
   const openBarracksModal = () => {
-    setIsBarracksModalOpen(true);
-  };
+    setIsBarracksModalOpen(true)
+  }
   const closeBarracksModal = () => {
-    setIsBarracksModalOpen(false);
-  };
+    setIsBarracksModalOpen(false)
+  }
   // Merchant Modal state variables
-  const [isMerchantModalOpen, setIsMerchantModalOpen] = React.useState(false);
+  const [isMerchantModalOpen, setIsMerchantModalOpen] = React.useState(false)
   const openMerchantModal = () => {
-    setIsMerchantModalOpen(true);
-  };
+    setIsMerchantModalOpen(true)
+  }
   const closeMerchantModal = () => {
-    setIsMerchantModalOpen(false);
-  };
+    setIsMerchantModalOpen(false)
+  }
+
 
 
   const initializePalaceButtonStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159850712352702485/plank_18.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  };
+  }
   const palaceUpgradeButtonStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655934977650870/plank_15.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  };
+  }
   const palaceMainInfoStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1160754915199696967/frame_k_06.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  };
+  }
   const collectAndHireBoxStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159682151835512893/frame.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  };
+  }
   const collectTokensButtonStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655518407753778/plank_13.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  };
+  }
   const collectResourcesButtonStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655518638448781/plank_14.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  };
+  }
   const hireMinersButtonStyles = {
-    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655518873342102/plank_15.png')`,
+    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655519154339931/plank_17.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  };
+  }
   const hireLumberjacksButtonStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655518873342102/plank_16.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
-  };
+  }
 
   const palaceModalStyles = {
     content: {
@@ -189,13 +190,14 @@ const GamePage = ({
       <CameraViewer
         imageUrl="/royal_palace.jpg"
         openPalaceModal={openPalaceModal}
+        openLumbermillModal={openLumbermillModal}
+        openMineModal={openMineModal}
+        openBarracksModal={openBarracksModal}
+        openMerchantModal={openMerchantModal}
       />{" "}
       <div className="align-top justify-end absolute left-4 top-4">
-        {authorized === false ? (
-          <Link href="/auth">
-            <Button>Login</Button>
-          </Link>
-        ) : null}
+        <WalletMultiButtonDynamic />
+        <WalletDisconnectButtonDynamic />
       </div>
       {/* Palace Modal */}
       <Modal
@@ -212,9 +214,9 @@ const GamePage = ({
               className="self-center flex flex-col mt-2 pb-14"
             >
               <Image
-                className="self-center mb-6"
+                className="self-center"
                 src={
-                  "https://cdn.discordapp.com/attachments/1152274140141735936/1160769786695909407/palace_title.png"
+                  "https://cdn.discordapp.com/attachments/1152274140141735936/1160954821403230218/palace_title.png"
                 }
                 width={400}
                 height={400}
@@ -224,27 +226,45 @@ const GamePage = ({
               <Image
                 className="self-center"
                 src={
-                  wallet && player && palace!.level < 15
-                    ? "https://cdn.discordapp.com/attachments/939309405227339776/1157085202770825276/Palace.png"
-                    : wallet && player && palace!.level < 30
-                    ? "https://cdn.discordapp.com/attachments/1152274140141735936/1160767190887301140/palace_2.png"
-                    : wallet && player && palace!.level < 45
-                    ? "https://cdn.discordapp.com/attachments/1152274140141735936/1160765588017254540/palace_3.png"
-                    : "https://cdn.discordapp.com/attachments/939309405227339776/1157085202770825276/Palace.png"
+                  "https://cdn.discordapp.com/attachments/1152274140141735936/1161672994096152576/palace.png"
                 }
                 width={200}
                 height={200}
                 alt="Palace"
               />
+              {wallet && !player ? (
+                // Initialize Palace Button
 
-              {player ? (
+                <button
+                  className="flex flex-col self-center my-2 mt-4 px-6 py-3 text-lg text-black font-bold"
+                  style={initializePalaceButtonStyles}
+                  onClick={handleSignupButtonClick}
+                >
+                  Initialize
+                </button>
+              ) : null}
+
+              {wallet && player ? (
                 <>
                   {/* Palace Level */}
 
                   <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center">
-                    <div className="flex self-center">
-                      <p className="mr-3">Level: </p>
-                      <p className="font-sans">{palace?.level}</p>
+                    <div className="flex justify-evenly">
+                      {/* Gold Amount */}
+
+                      <div className="px-1">
+                        <h3 className="text-md">Gold</h3>
+                        <h3 className="font-sans">{player?.gold.toNumber()}</h3>
+                      </div>
+
+                      {/* Lumber Amount */}
+
+                      <div className="px-1">
+                        <h3 className="text-md">Lumber</h3>
+                        <h3 className="font-sans">
+                          {player?.lumber.toNumber()}
+                        </h3>
+                      </div>
                     </div>
                     {/* Upgrade Palace Button */}
                     <button
@@ -254,175 +274,50 @@ const GamePage = ({
                     >
                       <div className="flex justify-center items-center mx-2">
                         <p className="mr-2">Upgrade</p>
-                        <div className="w-12 h-12 font-sans">
-                          {/** @ts-ignore */}
-                          <CircularProgressbar
-                            value={+player.gold + +player.lumber}
-                            maxValue={palace!.level * 1500}
-                            text={`${
-                              Math.floor(
-                                ((+player.lumber + +player.gold) /
-                                  (palace!.level * 1500)) *
-                                  100
-                              ) <= 100
-                                ? Math.floor(
-                                    ((+player.lumber + +player.gold) /
-                                      (palace!.level * 1500)) *
-                                      100
-                                  )
-                                : 100
-                            }%`}
-                          />
-                        </div>
                       </div>
                     </button>
+                    <div className="flex self-center text-3xl mt-2">
+                      <p className="mr-3">Level: </p>
+                      <p className="font-sans">{palace?.level}</p>
+                    </div>
                   </div>
                 </>
               ) : null}
             </div>
-            {player ? (
+            {wallet && player ? (
               <>
                 <div
                   style={collectAndHireBoxStyles}
-                  className="flex flex-col self-center p-5 mt-4"
+                  className="flex flex-col self-stretch items-center py-8 p-5 mt-4 md:mx-14"
                 >
                   <div className="flex text-gray-400 text-center p-1 font-bold">
                     {/* Resource Collection and Workforce */}
                     <div className="flex flex-col">
                       <div>
                         <div className="flex mb-1 justify-evenly">
-                          {/* GWEN Balance */}
-
-                          <div className="">
-                            <h3 className="text-lg">GWEN</h3>
-                            <h3 className="font-sans">{balance}</h3>
-                            {/* Collect Tokens Button */}
-
-                            <button
-                              style={collectTokensButtonStyles}
-                              className="m-2 px-3 py-3 text-base"
-                              onClick={handleCollectTokensButtonClick}
-                            >
-                              <div className="flex justify-center items-center">
-                                <p className="mr-2 text-black">Collect</p>
-                                <div className="w-12 h-12 font-sans">
-                                  {/** @ts-ignore */}
-                                  <CircularProgressbar
-                                    value={
-                                      (Math.floor(Date.now() / 1000) -
-                                        palace!.lastMintTimestamp) *
-                                      10 *
-                                      palace!.level
-                                    }
-                                    maxValue={86400 * 10 * palace!.level}
-                                    text={`${Math.floor(
-                                      (((Math.floor(Date.now() / 1000) -
-                                        palace!.lastMintTimestamp) *
-                                        10 *
-                                        palace!.level) /
-                                        (86400 * 10 * palace!.level)) *
-                                        100
-                                    )}%`}
-                                  />
-                                </div>
-                              </div>
-                            </button>
-                          </div>
-
                           <div>
                             <div className="flex justify-evenly">
-                              {/* Gold Amount */}
-
-                              <div className="px-1">
-                                <h3 className="text-lg">Gold</h3>
-                                <h3 className="font-sans">
-                                  {player?.gold.toNumber()}
-                                </h3>
-                              </div>
-
                               {/* Lumber Amount */}
 
                               <div className="px-1">
-                                <h3 className="text-lg">Lumber</h3>
-                                <h3 className="font-sans">
-                                  {player?.lumber.toNumber()}
-                                </h3>
+                                <h3 className="text-lg">GWEN</h3>
+                                <h3 className="font-sans">{balance}</h3>
                               </div>
                             </div>
                             <div>
-                              {/* Collect Resources Button */}
+                              {/* Collect Lumber Button */}
 
                               <button
                                 style={collectResourcesButtonStyles}
-                                className="m-2 px-3 py-3 text-black"
-                                onClick={handleCollectResourcesButtonClick}
+                                className="m-2 px-6 py-3 text-black"
+                                onClick={handleCollectTokensButtonClick}
                               >
                                 <div className="flex justify-center items-center">
                                   <p className="mr-2 text-black">Collect</p>
-                                  <div className="w-12 h-12 font-sans">
-                                    {/** @ts-ignore */}
-                                    <CircularProgressbar
-                                      value={
-                                        (Math.floor(Date.now() / 1000) -
-                                          palace!.lastMintTimestamp) *
-                                          player!.miners || 0
-                                      }
-                                      maxValue={86400 * player!.miners || 1}
-                                      text={`${
-                                        Math.floor(
-                                          (((Math.floor(Date.now() / 1000) -
-                                            palace!.lastMintTimestamp) *
-                                            player!.miners) /
-                                            (86400 * player!.miners)) *
-                                            100
-                                        ) || 0
-                                      }%`}
-                                    />
-                                  </div>
                                 </div>
                               </button>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                      <div className="flex  justify-evenly">
-                        <div>
-                          {/* Miners value */}
-
-                          <h3>Miners</h3>
-
-                          <h3 className="font-sans">
-                            {player?.miners.toNumber()}
-                          </h3>
-
-                          {/* Hire Miners Button */}
-
-                          <button
-                            style={hireMinersButtonStyles}
-                            className="m-2 px-6 py-3 text-base"
-                            onClick={() => handleHireButtonClick("Miner")}
-                          >
-                            <div className="p-0.5 text-black">Hire</div>
-                          </button>
-                        </div>
-                        <div>
-                          {/* Lumberjacks value */}
-
-                          <h3>Lumberjacks</h3>
-
-                          <h3 className="font-sans">
-                            {player?.lumberjacks.toNumber()}
-                          </h3>
-
-                          {/* Hire Lumberjacks Button */}
-
-                          <button
-                            style={hireLumberjacksButtonStyles}
-                            className="m-2 px-6 py-3 text-base"
-                            onClick={() => handleHireButtonClick("Lumberjack")}
-                          >
-                            <div className="p-0.5 text-black">Hire</div>
-                          </button>
                         </div>
                       </div>
                     </div>
@@ -433,7 +328,6 @@ const GamePage = ({
           </div>
         </div>
       </Modal>
-      
       {/* Lumbermill Modal */}
       <Modal
         isOpen={isLumbermillModalOpen}
@@ -487,7 +381,7 @@ const GamePage = ({
               <>
                 <div
                   style={collectAndHireBoxStyles}
-                  className="flex flex-col self-stretch items-center py-8 p-5 mt-4"
+                  className="flex flex-col self-stretch items-center py-8 p-5 mt-4 md:mx-14"
                 >
                   <div className="flex text-gray-400 text-center p-1 font-bold">
                     {/* Resource Collection and Workforce */}
@@ -580,7 +474,7 @@ const GamePage = ({
               <>
                 <div
                   style={collectAndHireBoxStyles}
-                  className="flex flex-col self-stretch items-center py-8 p-5 mt-4"
+                  className="flex flex-col self-stretch items-center py-8 p-5 mt-4 md:mx-14"
                 >
                   <div className="flex text-gray-400 text-center p-1 font-bold">
                     {/* Resource Collection and Workforce */}
@@ -673,7 +567,7 @@ const GamePage = ({
               <>
                 <div
                   style={collectAndHireBoxStyles}
-                  className="flex flex-col self-stretch items-center py-8 p-5 mt-4"
+                  className="flex flex-col self-stretch items-center py-8 p-5 mt-4 md:mx-14"
                 >
                   <div className="flex flex-col text-gray-400 text-center self-stretch items-stretch p-1 font-bold">
                     {/* Resource Collection and Workforce */}
@@ -811,7 +705,7 @@ const GamePage = ({
               <>
                 <div
                   style={collectAndHireBoxStyles}
-                  className="flex flex-col self-stretch items-center py-8 p-5 mt-4"
+                  className="flex flex-col self-stretch items-center py-8 p-5 mt-4 md:mx-14"
                 >
                   <h3 className="py-8 text-3xl font-bold">Coming Soon!</h3>
                 </div>
