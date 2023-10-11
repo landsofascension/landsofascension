@@ -19,7 +19,7 @@ export const mint = PublicKey.findProgramAddressSync(
   PROGRAM_ID
 )[0]
 
-export default function useGameCore(playerUserName: string) {
+export default function useGameCore(playerUserName?: string | null) {
   const { connection } = useConnection()
   const [program, setProgram] = useState<Program<GameCore> | null>(null)
   const [balance, setBalance] = useState(0)

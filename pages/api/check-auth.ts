@@ -7,13 +7,18 @@ export default async function GET(req: NextApiRequest, res: NextApiResponse) {
 
     if (!token) throw new Error("No token provided")
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string)
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
+      username: string
+    }
 
     if (!decoded) {
       res.status(400).json({ message: "Expired" })
     } else {
       // If the token is valid, return some protected data.
-      res.status(200).json({ message: "Authentication successful", token })
+      res.status(200).json({
+        message: "Authentication successful",
+        username: decoded.username,
+      })
     }
   } catch (error) {
     console.error("Token verification failed", error)

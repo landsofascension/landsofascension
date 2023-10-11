@@ -13,6 +13,7 @@ import "react-circular-progressbar/dist/styles.css"
 import { AuthProps, getInitialAuthProps } from "@/utils/auth"
 import { Button } from "theme-ui"
 import Link from "next/link"
+import useAuthorization from "@/hooks/useAuthorization"
 
 const WalletDisconnectButtonDynamic = dynamic(
   async () =>
@@ -32,7 +33,14 @@ const CameraViewer = dynamic(
 
 type GamePageProps = {} & AuthProps
 
-const GamePage = ({ authorized, username }: GamePageProps) => {
+const GamePage = ({
+  authorized: serverAuthorized,
+  username: serverUsername,
+}: GamePageProps) => {
+  const { authorized, username } = useAuthorization(
+    serverAuthorized,
+    serverUsername
+  )
   const wallet = useAnchorWallet()
   const {
     balance,
@@ -250,6 +258,7 @@ const GamePage = ({ authorized, username }: GamePageProps) => {
                       <div className="flex justify-center items-center mx-2">
                         <p className="mr-2">Upgrade</p>
                         <div className="w-12 h-12 font-sans">
+                          {/** @ts-ignore */}
                           <CircularProgressbar
                             value={+player.gold + +player.lumber}
                             maxValue={palace!.level * 1500}
@@ -300,6 +309,7 @@ const GamePage = ({ authorized, username }: GamePageProps) => {
                               <div className="flex justify-center items-center">
                                 <p className="mr-2 text-black">Collect</p>
                                 <div className="w-12 h-12 font-sans">
+                                  {/** @ts-ignore */}
                                   <CircularProgressbar
                                     value={
                                       (Math.floor(Date.now() / 1000) -
@@ -353,19 +363,18 @@ const GamePage = ({ authorized, username }: GamePageProps) => {
                                 <div className="flex justify-center items-center">
                                   <p className="mr-2 text-black">Collect</p>
                                   <div className="w-12 h-12 font-sans">
+                                    {/** @ts-ignore */}
                                     <CircularProgressbar
                                       value={
                                         (Math.floor(Date.now() / 1000) -
-                                          palace!
-                                            .lastResourceCollectionTimestamp) *
+                                          palace!.lastMintTimestamp) *
                                           player!.miners || 0
                                       }
                                       maxValue={86400 * player!.miners || 1}
                                       text={`${
                                         Math.floor(
                                           (((Math.floor(Date.now() / 1000) -
-                                            palace!
-                                              .lastResourceCollectionTimestamp) *
+                                            palace!.lastMintTimestamp) *
                                             player!.miners) /
                                             (86400 * player!.miners)) *
                                             100

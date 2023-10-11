@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react"
 
 export default function useAuthorization(
-  initialAuthorized: boolean | null = null
+  initialAuthorized: boolean | null = null,
+  initialUsername: string | null = null
 ) {
   const [authorized, setAuthorized] = useState<boolean | null>(
     initialAuthorized
   )
+  const [username, setUsername] = useState<string | null>(initialUsername)
 
   useEffect(() => {
     const fetchAuthorization = async () => {
@@ -18,6 +20,11 @@ export default function useAuthorization(
         return
       }
 
+      const resJson = await resRaw.json()
+
+      const { username } = resJson
+
+      setUsername(username)
       setAuthorized(true)
     }
 
@@ -26,5 +33,5 @@ export default function useAuthorization(
     }
   }, [initialAuthorized])
 
-  return { authorized }
+  return { authorized, username }
 }
