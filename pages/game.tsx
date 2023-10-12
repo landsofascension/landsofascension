@@ -40,7 +40,7 @@ const GamePage = ({
   } = useGameCore(username)
 
   // Palace Modal state variables
-  const [isPalaceModalOpen, setIsPalaceModalOpen] = React.useState(false)
+  const [isPalaceModalOpen, setIsPalaceModalOpen] = React.useState(true)
   const openPalaceModal = () => {
     setIsPalaceModalOpen(true)
   }
@@ -81,77 +81,53 @@ const GamePage = ({
     setIsMerchantModalOpen(false)
   }
 
-  const initializePalaceButtonStyles = {
-    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159850712352702485/plank_18.png')`,
+  // Styles for buttons, boxes, frames, etc
+  const buttonStyles = {
+    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1161836031985852596/button.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
   }
-  const palaceUpgradeButtonStyles = {
-    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655934977650870/plank_15.png')`,
+  const hireButtonStyles = {
+    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1162032452500463636/hire_button.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
   }
-  const palaceMainInfoStyles = {
-    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1160754915199696967/frame_k_06.png')`,
+  const buildingInfoStyles = {
+    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1161848153738317954/frame.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
   }
-  const collectAndHireBoxStyles = {
-    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159682151835512893/frame.png')`,
+  const resourceInfoBoxStyles = {
+    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1162047022719836320/dark_frame.png')`,
+    backgroundSize: "100% 100%",
+    backgroundRepeat: "no-repeat",
+    minWidth: "175px",
+  }
+  const tallBoxStyles = {
+    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1162025830449426482/tallBox.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
   }
-  const collectTokensButtonStyles = {
-    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655518407753778/plank_13.png')`,
-    backgroundSize: "100% 100%",
-    backgroundRepeat: "no-repeat",
-  }
-  const collectResourcesButtonStyles = {
-    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655518638448781/plank_14.png')`,
-    backgroundSize: "100% 100%",
-    backgroundRepeat: "no-repeat",
-  }
-  const hireMinersButtonStyles = {
-    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655519154339931/plank_17.png')`,
-    backgroundSize: "100% 100%",
-    backgroundRepeat: "no-repeat",
-  }
-  const hireLumberjacksButtonStyles = {
-    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159655518873342102/plank_16.png')`,
+  const boxStyles = {
+    backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1161840285060452433/box.png')`,
     backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
   }
 
-  const palaceModalStyles = {
+  const buildingModalStyles = {
     content: {
       maxWidth: "80%",
-      maxHeight: "80%",
+      maxHeight: "90%",
       top: "0",
       left: "0",
       right: "0",
       bottom: "0",
       margin: "auto",
-      backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159651293053329508/bg_01_02.png')`,
+      backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1161846691109011628/modal_bg.png')`,
       backgroundSize: "100% 100%",
       backgroundRepeat: "no-repeat",
       backgroundColor: "transparent",
       border: "none",
-      color: "black",
-    },
-    overlay: {
-      backgroundColor: "rgba(0, 0, 0, 0.75)",
-    },
-  }
-  const pledgeModalStyles = {
-    content: {
-      width: "40%",
-      height: "30%",
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      transform: "translate(-50%, -50%)",
-      backgroundColor: "grey",
       color: "black",
     },
     overlay: {
@@ -180,6 +156,7 @@ const GamePage = ({
         openBarracksModal={openBarracksModal}
         openMerchantModal={openMerchantModal}
       />{" "}
+      {/* Login Button */}
       <div className="align-top justify-end absolute left-4 top-4">
         {authorized === false ? (
           <Link href="/auth">
@@ -187,24 +164,45 @@ const GamePage = ({
           </Link>
         ) : null}
       </div>
+      {/* Resource HUD */}
+      <div className="align-top justify-end absolute bottom-1 lg:left-4 lg:top-4">
+        {player !== false ? (
+          <div className="p-3" style={hireButtonStyles}>
+            <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center font-eagle">
+              <div className="flex">
+                <p className="mr-3">GWEN: </p>
+                <p className="font-sans">{balance}</p>
+              </div>
+              <div className="flex">
+                <p className="mr-3">Gold: </p>
+                <p className="font-sans">{player?.gold.toNumber()}</p>
+              </div>
+              <div className="flex">
+                <p className="mr-3">Lumber: </p>
+                <p className="font-sans">{player?.lumber.toNumber()}</p>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </div>
       {/* Palace Modal */}
       <Modal
         isOpen={isPalaceModalOpen}
         onRequestClose={closePalaceModal}
-        style={palaceModalStyles}
+        style={buildingModalStyles}
       >
         <div className="font-eagle">
           {/* Palace name and image */}
 
           <div className="flex flex-col">
             <div
-              style={palaceMainInfoStyles}
-              className="self-center flex flex-col mt-2 pb-14"
+              style={buildingInfoStyles}
+              className="self-center flex flex-col mt-2 pb-8"
             >
               <Image
-                className="self-center"
+                className="self-center pb-8"
                 src={
-                  "https://cdn.discordapp.com/attachments/1152274140141735936/1160954821403230218/palace_title.png"
+                  "https://cdn.discordapp.com/attachments/1152274140141735936/1161823739806228591/titlebar.png"
                 }
                 width={400}
                 height={400}
@@ -212,7 +210,7 @@ const GamePage = ({
               />
 
               <Image
-                className="self-center"
+                className="self-center brightness-200"
                 src={
                   "https://cdn.discordapp.com/attachments/1152274140141735936/1161672994096152576/palace.png"
                 }
@@ -224,9 +222,26 @@ const GamePage = ({
               {player ? (
                 <>
                   {/* Palace Level */}
+                  <div className="flex self-center text-3xl mt-2">
+                    <p className="mr-4">Level </p>
+                    <p className="font-sans">{palace?.level}</p>
+                  </div>
 
                   <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center">
-                    <div className="flex justify-evenly">
+                    {/* Upgrade Palace Button */}
+                    <button
+                      style={buttonStyles}
+                      className="m-0.5 mb-2 px-2 py-3 text-base"
+                      onClick={handleUpgradePalaceButtonClick}
+                    >
+                      <div className="flex justify-center items-center mx-2">
+                        <p>Upgrade</p>
+                      </div>
+                    </button>
+                    <div
+                      style={resourceInfoBoxStyles}
+                      className="flex p-4 justify-evenly"
+                    >
                       {/* Gold Amount */}
 
                       <div className="px-1">
@@ -243,20 +258,6 @@ const GamePage = ({
                         </h3>
                       </div>
                     </div>
-                    {/* Upgrade Palace Button */}
-                    <button
-                      style={palaceUpgradeButtonStyles}
-                      className="m-0.5 px-6 py-3 text-base"
-                      onClick={handleUpgradePalaceButtonClick}
-                    >
-                      <div className="flex justify-center items-center mx-2">
-                        <p className="mr-2">Upgrade</p>
-                      </div>
-                    </button>
-                    <div className="flex self-center text-3xl mt-2">
-                      <p className="mr-3">Level: </p>
-                      <p className="font-sans">{palace?.level}</p>
-                    </div>
                   </div>
                 </>
               ) : null}
@@ -264,7 +265,7 @@ const GamePage = ({
             {player ? (
               <>
                 <div
-                  style={collectAndHireBoxStyles}
+                  style={boxStyles}
                   className="flex flex-col self-stretch items-center py-8 p-5 mt-4 md:mx-14"
                 >
                   <div className="flex text-gray-400 text-center p-1 font-bold">
@@ -285,7 +286,7 @@ const GamePage = ({
                               {/* Collect Lumber Button */}
 
                               <button
-                                style={collectResourcesButtonStyles}
+                                style={buttonStyles}
                                 className="m-2 px-6 py-3 text-black"
                                 onClick={handleCollectTokensButtonClick}
                               >
@@ -309,20 +310,20 @@ const GamePage = ({
       <Modal
         isOpen={isLumbermillModalOpen}
         onRequestClose={closeLumbermillModal}
-        style={palaceModalStyles}
+        style={buildingModalStyles}
       >
         <div className="font-eagle">
           {/* LumberMill name and image */}
 
           <div className="flex flex-col">
             <div
-              style={palaceMainInfoStyles}
-              className="self-center flex flex-col mt-2 pb-14"
+              style={buildingInfoStyles}
+              className="self-center flex flex-col mt-2 pb-10"
             >
               <Image
-                className="self-center"
+                className="self-center pb-8"
                 src={
-                  "https://cdn.discordapp.com/attachments/1152274140141735936/1161690210745188372/lumbermill_title.png"
+                  "https://cdn.discordapp.com/attachments/1152274140141735936/1161823814771028038/lumbermill_title_dark.png"
                 }
                 width={400}
                 height={400}
@@ -330,7 +331,7 @@ const GamePage = ({
               />
 
               <Image
-                className="self-center"
+                className="self-center mb-4"
                 src={
                   "https://cdn.discordapp.com/attachments/1152274140141735936/1161673065932009634/lumbermill.png"
                 }
@@ -344,11 +345,16 @@ const GamePage = ({
                   {/* Lumberjacks */}
 
                   <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center">
-                    <div className="flex self-center">
-                      <p className="mr-3">Lumberjacks: </p>
-                      <p className="font-sans">
-                        {player.lumberjacks.toNumber()}
-                      </p>
+                    <div
+                      style={resourceInfoBoxStyles}
+                      className="flex p-4 justify-evenly"
+                    >
+                      <div className="flex flex-col self-center">
+                        <p>Lumberjacks</p>
+                        <p className="font-sans">
+                          {player.lumberjacks.toNumber()}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </>
@@ -357,7 +363,7 @@ const GamePage = ({
             {player ? (
               <>
                 <div
-                  style={collectAndHireBoxStyles}
+                  style={boxStyles}
                   className="flex flex-col self-stretch items-center py-8 p-5 mt-4 md:mx-14"
                 >
                   <div className="flex text-gray-400 text-center p-1 font-bold">
@@ -380,7 +386,7 @@ const GamePage = ({
                               {/* Collect Lumber Button */}
 
                               <button
-                                style={collectResourcesButtonStyles}
+                                style={buttonStyles}
                                 className="m-2 px-6 py-3 text-black"
                                 onClick={handleCollectResourcesButtonClick}
                               >
@@ -404,20 +410,20 @@ const GamePage = ({
       <Modal
         isOpen={isMineModalOpen}
         onRequestClose={closeMineModal}
-        style={palaceModalStyles}
+        style={buildingModalStyles}
       >
         <div className="font-eagle">
           {/* Mine name and image */}
 
           <div className="flex flex-col">
             <div
-              style={palaceMainInfoStyles}
-              className="self-center flex flex-col mt-2 pb-14"
+              style={buildingInfoStyles}
+              className="self-center flex flex-col mt-2 pb-10"
             >
               <Image
-                className="self-center"
+                className="self-center pb-8"
                 src={
-                  "https://cdn.discordapp.com/attachments/1152274140141735936/1161690211655356477/mine_title.png"
+                  "https://cdn.discordapp.com/attachments/1152274140141735936/1161823802418794556/mine_title_dark.png"
                 }
                 width={400}
                 height={400}
@@ -425,7 +431,7 @@ const GamePage = ({
               />
 
               <Image
-                className="self-center"
+                className="self-center mb-4"
                 src={
                   "https://cdn.discordapp.com/attachments/1152274140141735936/1161673082453377106/mine.png"
                 }
@@ -439,9 +445,14 @@ const GamePage = ({
                   {/* Miners */}
 
                   <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center">
-                    <div className="flex self-center">
-                      <p className="mr-3">Miners: </p>
-                      <p className="font-sans">{player.miners.toNumber()}</p>
+                    <div
+                      style={resourceInfoBoxStyles}
+                      className="flex p-4 justify-evenly"
+                    >
+                      <div className="flex flex-col self-center px-8">
+                        <p>Miners</p>
+                        <p className="font-sans">{player.miners.toNumber()}</p>
+                      </div>
                     </div>
                   </div>
                 </>
@@ -450,7 +461,7 @@ const GamePage = ({
             {player ? (
               <>
                 <div
-                  style={collectAndHireBoxStyles}
+                  style={boxStyles}
                   className="flex flex-col self-stretch items-center py-8 p-5 mt-4 md:mx-14"
                 >
                   <div className="flex text-gray-400 text-center p-1 font-bold">
@@ -473,7 +484,7 @@ const GamePage = ({
                               {/* Collect Gold Button */}
 
                               <button
-                                style={collectResourcesButtonStyles}
+                                style={buttonStyles}
                                 className="m-2 px-6 py-3 text-black"
                                 onClick={handleCollectResourcesButtonClick}
                               >
@@ -497,20 +508,20 @@ const GamePage = ({
       <Modal
         isOpen={isBarracksModalOpen}
         onRequestClose={closeBarracksModal}
-        style={palaceModalStyles}
+        style={buildingModalStyles}
       >
         <div className="font-eagle">
           {/* Barracks name and image */}
 
           <div className="flex flex-col">
             <div
-              style={palaceMainInfoStyles}
-              className="self-center flex flex-col mt-2 pb-14"
+              style={buildingInfoStyles}
+              className="self-center flex flex-col mt-2 pb-6"
             >
               <Image
-                className="self-center"
+                className="self-center pb-8"
                 src={
-                  "https://cdn.discordapp.com/attachments/1152274140141735936/1161690210329956482/barracks_title.png"
+                  "https://cdn.discordapp.com/attachments/1152274140141735936/1161823773083840552/barracks_title_dark.png"
                 }
                 width={400}
                 height={400}
@@ -518,7 +529,7 @@ const GamePage = ({
               />
 
               <Image
-                className="self-center"
+                className="self-center mb-3"
                 src={
                   "https://cdn.discordapp.com/attachments/1152274140141735936/1161673027814162484/barracks.png"
                 }
@@ -529,12 +540,17 @@ const GamePage = ({
 
               {player ? (
                 <>
-                  {/* Barracks Info */}
+                  {/* GWEN */}
 
                   <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center">
-                    <div className="mt-4 flex flex-col self-center">
-                      <p className="mr-3">GWEN: </p>
-                      <p className="font-sans">{balance}</p>
+                    <div
+                      style={resourceInfoBoxStyles}
+                      className="flex p-4 justify-evenly"
+                    >
+                      <div className="flex flex-col self-center">
+                        <p>GWEN</p>
+                        <p className="font-sans">{balance}</p>
+                      </div>
                     </div>
                   </div>
                 </>
@@ -543,10 +559,10 @@ const GamePage = ({
             {player ? (
               <>
                 <div
-                  style={collectAndHireBoxStyles}
-                  className="flex flex-col self-stretch items-center py-8 p-5 mt-4 md:mx-14"
+                  style={tallBoxStyles}
+                  className="flex flex-col self-stretch items-centers p-5 mt-4 lg:mx-20"
                 >
-                  <div className="flex flex-col text-gray-400 text-center self-stretch items-stretch p-1 font-bold">
+                  <div className="flex flex-col text-black text-center self-stretch items-stretch p-1 font-bold">
                     {/* Resource Collection and Workforce */}
                     <div className="flex  justify-evenly mb-2">
                       <div>
@@ -561,7 +577,7 @@ const GamePage = ({
                         {/* Hire Miners Button */}
 
                         <button
-                          style={hireMinersButtonStyles}
+                          style={hireButtonStyles}
                           className="m-2 px-6 py-3 text-base"
                           onClick={() => handleHireButtonClick("Miner")}
                         >
@@ -578,7 +594,7 @@ const GamePage = ({
                         {/* Hire Guards Button */}
 
                         <button
-                          style={hireLumberjacksButtonStyles}
+                          style={hireButtonStyles}
                           className="m-2 px-6 py-3 text-base"
                           onClick={() => console.log("Hire Guards Clicked")}
                         >
@@ -597,7 +613,7 @@ const GamePage = ({
                         {/* Hire Miners Button */}
 
                         <button
-                          style={hireMinersButtonStyles}
+                          style={hireButtonStyles}
                           className="m-2 px-6 py-3 text-base"
                           onClick={() => console.log("Hire Warriors Clicked")}
                         >
@@ -616,7 +632,7 @@ const GamePage = ({
                         {/* Hire Lumberjacks Button */}
 
                         <button
-                          style={hireLumberjacksButtonStyles}
+                          style={hireButtonStyles}
                           className="m-2 px-6 py-3 text-base"
                           onClick={() => handleHireButtonClick("Lumberjack")}
                         >
@@ -635,20 +651,20 @@ const GamePage = ({
       <Modal
         isOpen={isMerchantModalOpen}
         onRequestClose={closeMerchantModal}
-        style={palaceModalStyles}
+        style={buildingModalStyles}
       >
         <div className="font-eagle">
           {/* Merchant name and image */}
 
           <div className="flex flex-col">
             <div
-              style={palaceMainInfoStyles}
-              className="self-center flex flex-col mt-2 pb-14"
+              style={buildingInfoStyles}
+              className="self-center flex flex-col mt-2 pb-10"
             >
               <Image
-                className="self-center"
+                className="self-center pb-8"
                 src={
-                  "https://cdn.discordapp.com/attachments/1152274140141735936/1161690211261096016/merchant_title.png"
+                  "https://cdn.discordapp.com/attachments/1152274140141735936/1161823835268583585/merchant_title_dark.png"
                 }
                 width={400}
                 height={400}
@@ -667,12 +683,17 @@ const GamePage = ({
 
               {player ? (
                 <>
-                  {/* Merchant Info */}
+                  {/* GWEN */}
 
                   <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center">
-                    <div className="mt-4 flex flex-col self-center">
-                      <p className="mr-3">GWEN: </p>
-                      <p className="font-sans">{balance}</p>
+                    <div
+                      style={resourceInfoBoxStyles}
+                      className="flex p-4 justify-evenly"
+                    >
+                      <div className="flex flex-col self-center">
+                        <p>GWEN</p>
+                        <p className="font-sans">{balance}</p>
+                      </div>
                     </div>
                   </div>
                 </>
@@ -681,10 +702,12 @@ const GamePage = ({
             {player ? (
               <>
                 <div
-                  style={collectAndHireBoxStyles}
+                  style={boxStyles}
                   className="flex flex-col self-stretch items-center py-8 p-5 mt-4 md:mx-14"
                 >
-                  <h3 className="py-8 text-3xl font-bold">Coming Soon!</h3>
+                  <h3 className="py-8 text-2xl md:text-3xl font-bold">
+                    Coming Soon!
+                  </h3>
                 </div>
               </>
             ) : null}
