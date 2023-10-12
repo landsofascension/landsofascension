@@ -25,9 +25,10 @@ export const callProgramMethod = async (
       },
     })
 
-    if (!resRaw.ok) throw new Error("Error calling program method API")
-
     const { message, txId } = await resRaw.json()
+
+    if (!resRaw.ok)
+      throw new Error(message || "Error calling program method API")
 
     return { message, txId }
   } catch (e) {

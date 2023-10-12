@@ -34,7 +34,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
             <Component {...pageProps} />
             <ToastContainer
               position={toast.POSITION.TOP_CENTER}
-              autoClose={1000}
+              autoClose={2000}
             />
           </ThemeUIProvider>
         </WalletModalProvider>
