@@ -50,7 +50,10 @@ export default async function CallProgramMethodApiHandler(
       bs58.decode(process.env.GAME_AUTHORITY_PRIVATE_KEY as string)
     )
 
-    const connection = new Connection("http://localhost:8899", "confirmed")
+    const connection = new Connection(
+      process.env.NEXT_PUBLIC_RPC_URL as string,
+      "confirmed"
+    )
 
     const gameAuthorityWallet = {
       publicKey: gameAuthorityKeypair.publicKey,

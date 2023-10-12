@@ -17,7 +17,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
   // Can be set to 'devnet', 'testnet', or 'mainnet-beta'
 
   // You can also provide a custom RPC endpoint
-  const endpoint = "http://localhost:8899"
+  const endpoint = process.env.NEXT_PUBLIC_RPC_URL as string
 
   return (
     <ConnectionProvider endpoint={endpoint}>

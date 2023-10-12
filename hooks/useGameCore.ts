@@ -24,7 +24,7 @@ export default function useGameCore(playerUserName?: string | null) {
   const [program, setProgram] = useState<Program<GameCore> | null>(null)
   const [balance, setBalance] = useState(0)
   const [palace, setPalace] = useState<Palace | null>(null)
-  const [player, setPlayer] = useState<Player | null>(null)
+  const [player, setPlayer] = useState<Player | null | false>(null)
 
   const { playerAddress, playerVaultAddress, playerPalaceAddress } =
     useMemo(() => {
@@ -92,6 +92,7 @@ export default function useGameCore(playerUserName?: string | null) {
         const player = await program.account.player.fetch(playerAddress)
         setPlayer(player)
       } catch (e) {
+        setPlayer(false)
         console.error(e)
       }
     }
@@ -124,6 +125,14 @@ export default function useGameCore(playerUserName?: string | null) {
   useEffect(() => {
     fetchPlayerAccount()
   }, [fetchPlayerAccount])
+
+  useEffect(() => {
+    if (playerUserName && playerAddress && player === false) {
+      alert(
+        "Something is wrong with your account, please contact support, or try another account."
+      )
+    }
+  }, [playerUserName, player, playerAddress])
 
   const handleCollectTokensButtonClick = async () => {
     try {
