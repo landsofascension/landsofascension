@@ -1,6 +1,5 @@
 "use client"
 
-import { useAnchorWallet } from "@solana/wallet-adapter-react"
 import dynamic from "next/dynamic"
 import React from "react"
 import "react-toastify/dist/ReactToastify.css"
@@ -8,23 +7,11 @@ import Modal from "react-modal"
 import "tailwindcss/tailwind.css"
 import Image from "next/image"
 import useGameCore from "@/hooks/useGameCore"
-import { CircularProgressbar } from "react-circular-progressbar"
 import "react-circular-progressbar/dist/styles.css"
 import { AuthProps, getInitialAuthProps } from "@/utils/auth"
-import { Button } from "theme-ui"
-import Link from "next/link"
 import useAuthorization from "@/hooks/useAuthorization"
-
-const WalletDisconnectButtonDynamic = dynamic(
-  async () =>
-    (await import("@solana/wallet-adapter-react-ui")).WalletDisconnectButton,
-  { ssr: false }
-)
-const WalletMultiButtonDynamic = dynamic(
-  async () =>
-    (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
-  { ssr: false }
-)
+import Link from "next/link"
+import { Button } from "theme-ui"
 
 const CameraViewer = dynamic(
   async () => (await import("@/app/CameraViewer")).default,
@@ -41,7 +28,7 @@ const GamePage = ({
     serverAuthorized,
     serverUsername
   )
-  const wallet = useAnchorWallet()
+
   const {
     balance,
     palace,
@@ -93,8 +80,6 @@ const GamePage = ({
   const closeMerchantModal = () => {
     setIsMerchantModalOpen(false)
   }
-
-
 
   const initializePalaceButtonStyles = {
     backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159850712352702485/plank_18.png')`,
@@ -196,8 +181,11 @@ const GamePage = ({
         openMerchantModal={openMerchantModal}
       />{" "}
       <div className="align-top justify-end absolute left-4 top-4">
-        <WalletMultiButtonDynamic />
-        <WalletDisconnectButtonDynamic />
+        {authorized === false ? (
+          <Link href="/auth">
+            <Button>Login</Button>
+          </Link>
+        ) : null}
       </div>
       {/* Palace Modal */}
       <Modal
@@ -232,19 +220,8 @@ const GamePage = ({
                 height={200}
                 alt="Palace"
               />
-              {wallet && !player ? (
-                // Initialize Palace Button
 
-                <button
-                  className="flex flex-col self-center my-2 mt-4 px-6 py-3 text-lg text-black font-bold"
-                  style={initializePalaceButtonStyles}
-                  onClick={handleSignupButtonClick}
-                >
-                  Initialize
-                </button>
-              ) : null}
-
-              {wallet && player ? (
+              {player ? (
                 <>
                   {/* Palace Level */}
 
@@ -284,7 +261,7 @@ const GamePage = ({
                 </>
               ) : null}
             </div>
-            {wallet && player ? (
+            {player ? (
               <>
                 <div
                   style={collectAndHireBoxStyles}
@@ -362,7 +339,7 @@ const GamePage = ({
                 alt="Lumbermill"
               />
 
-              {wallet && player ? (
+              {player ? (
                 <>
                   {/* Lumberjacks */}
 
@@ -377,7 +354,7 @@ const GamePage = ({
                 </>
               ) : null}
             </div>
-            {wallet && player ? (
+            {player ? (
               <>
                 <div
                   style={collectAndHireBoxStyles}
@@ -457,7 +434,7 @@ const GamePage = ({
                 alt="Mine"
               />
 
-              {wallet && player ? (
+              {player ? (
                 <>
                   {/* Miners */}
 
@@ -470,7 +447,7 @@ const GamePage = ({
                 </>
               ) : null}
             </div>
-            {wallet && player ? (
+            {player ? (
               <>
                 <div
                   style={collectAndHireBoxStyles}
@@ -550,7 +527,7 @@ const GamePage = ({
                 alt="Barracks"
               />
 
-              {wallet && player ? (
+              {player ? (
                 <>
                   {/* Barracks Info */}
 
@@ -563,7 +540,7 @@ const GamePage = ({
                 </>
               ) : null}
             </div>
-            {wallet && player ? (
+            {player ? (
               <>
                 <div
                   style={collectAndHireBoxStyles}
@@ -688,7 +665,7 @@ const GamePage = ({
                 alt="Merchant"
               />
 
-              {wallet && player ? (
+              {player ? (
                 <>
                   {/* Merchant Info */}
 
@@ -701,7 +678,7 @@ const GamePage = ({
                 </>
               ) : null}
             </div>
-            {wallet && player ? (
+            {player ? (
               <>
                 <div
                   style={collectAndHireBoxStyles}
