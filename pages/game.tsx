@@ -124,13 +124,13 @@ const GamePage = ({
 
   const palaceModalStyles = {
     content: {
-      width: "95%",
-      height: "95%",
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      transform: "translate(-50%, -50%)",
+      maxWidth: "80%",
+      maxHeight: "80%",
+      top: "0",
+      left: "0",
+      right: "0",
+      bottom: "0",
+      margin: "auto",
       backgroundImage: `url('https://cdn.discordapp.com/attachments/1152274140141735936/1159651293053329508/bg_01_02.png')`,
       backgroundSize: "100% 100%",
       backgroundRepeat: "no-repeat",
@@ -173,7 +173,7 @@ const GamePage = ({
       }}
     >
       <CameraViewer
-        imageUrl="/royal_palace.jpg"
+        imageUrl="/landsofascencion_map.jpeg"
         openPalaceModal={openPalaceModal}
         openLumbermillModal={openLumbermillModal}
         openMineModal={openMineModal}
@@ -691,6 +691,18 @@ const GamePage = ({
           </div>
         </div>
       </Modal>
+      <style jsx global>{`
+        .ReactModal__Content {
+          width: 329px;
+        }
+
+        @media (min-width: 1024px) {
+          .ReactModal__Content {
+            width: 658px;
+            height: 871px;
+          }
+        }
+      `}</style>
     </div>
   )
 }

@@ -126,7 +126,8 @@ const CameraViewer: React.FC<CameraViewerProps> = ({
           ...cameraStyle,
           transform: `translate(${cameraPosition.x}px, ${cameraPosition.y}px)`,
         }}
-      >{/* Palace Button */}
+      >
+        {/* Palace Button */}
         <span
           sx={{
             position: "absolute",
@@ -135,6 +136,7 @@ const CameraViewer: React.FC<CameraViewerProps> = ({
             width: "596px",
             height: "596px",
             borderRadius: "15%",
+            background: "rgb(0 0 0 / 15%)",
             zIndex: 1,
             cursor: "pointer",
             ":hover": {
@@ -152,7 +154,7 @@ const CameraViewer: React.FC<CameraViewerProps> = ({
             width: "196px",
             height: "196px",
             borderRadius: "15%",
-            background: "transparent",
+            background: "rgb(0 0 0 / 15%)",
             zIndex: 1,
             cursor: "pointer",
             ":hover": {
@@ -170,7 +172,7 @@ const CameraViewer: React.FC<CameraViewerProps> = ({
             width: "166px",
             height: "166px",
             borderRadius: "15%",
-            background: "transparent",
+            background: "rgb(0 0 0 / 15%)",
             zIndex: 1,
             cursor: "pointer",
             ":hover": {
@@ -188,6 +190,7 @@ const CameraViewer: React.FC<CameraViewerProps> = ({
             width: "424px",
             height: "296px",
             borderRadius: "15%",
+            background: "rgb(0 0 0 / 15%)",
             zIndex: 1,
             cursor: "pointer",
             ":hover": {
@@ -205,6 +208,7 @@ const CameraViewer: React.FC<CameraViewerProps> = ({
             width: "372px",
             height: "272px",
             borderRadius: "15%",
+            background: "rgb(0 0 0 / 15%)",
             zIndex: 1,
             cursor: "pointer",
             ":hover": {
