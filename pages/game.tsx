@@ -171,7 +171,7 @@ const GamePage = ({
         ) : null}
       </div>
       {/* Resource HUD */}
-      <div className="align-top justify-end absolute bottom-1 lg:left-4 lg:top-4">
+      <div className="align-top justify-end absolute left-4 top-4">
         {player !== false ? (
           <div className="p-3" style={hireButtonStyles}>
             <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center font-eagle">
