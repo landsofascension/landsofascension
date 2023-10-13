@@ -157,7 +157,13 @@ const GamePage = ({
         openMerchantModal={openMerchantModal}
       />{" "}
       {/* Login Button */}
-      <div className="align-top justify-end absolute left-4 top-4">
+      <div
+        className="align-top justify-end absolute top-10"
+        sx={{
+          zIndex: 10,
+          margin: "0 auto",
+        }}
+      >
         {authorized === false ? (
           <Link href="/auth">
             <Button>Login</Button>
