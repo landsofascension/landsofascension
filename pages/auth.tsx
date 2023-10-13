@@ -98,7 +98,7 @@ export default function Auth(props: Props) {
       sx={{
         flexDirection: "column",
         alignItems: ["center"],
-        justifyContent: ["start", "center"],
+        justifyContent: "start",
         height: "100vh",
         width: "100vw",
         backgroundImage:
@@ -106,6 +106,7 @@ export default function Auth(props: Props) {
         backgroundSize: "cover",
         backgroundPosition: "center",
         overflow: "auto",
+        pt: ["0px", "32px"],
       }}
     >
       <Image

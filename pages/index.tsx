@@ -6,7 +6,7 @@ const Home = () => {
       sx={{
         flexDirection: "column",
         alignItems: ["center"],
-        justifyContent: ["start", "center"],
+        justifyContent: "start",
         height: "100vh",
         width: "100vw",
         backgroundImage:
@@ -14,12 +14,13 @@ const Home = () => {
         backgroundSize: "cover",
         backgroundPosition: "center",
         overflow: "auto",
+        pt: ["0px", "64px"],
       }}
     >
       <Image
         src="https://cdn.discordapp.com/attachments/1152274140141735936/1161823697456332880/loa_title_dark.png"
         alt="Lands of Ascension"
-        sx={{ width: ["300", "500px"], my: 2, mx: ["8px", "0"] }}
+        sx={{ width: ["300", "600px"], my: 2, mx: ["8px", "0"] }}
       />
 
       <Text
@@ -33,7 +34,7 @@ const Home = () => {
           backgroundColor: "rgb(128, 128, 128, 0.9)",
           textShadow:
             "1px 1px 0 #615819, -1px -1px 0 #615819, 1px -1px 0 #615819, -1px 1px 0 #615819",
-          fontSize: ["26px", "48px"],
+          fontSize: ["20px", "32px"],
           fontFamily: "devinne",
           mt: ["0", "16px"],
 
