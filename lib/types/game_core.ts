@@ -412,6 +412,10 @@ export type GameCore = {
           {
             "name": "lumberjacks",
             "type": "u64"
+          },
+          {
+            "name": "lastResourcesTimestamp",
+            "type": "u64"
           }
         ]
       }
@@ -427,7 +431,7 @@ export type GameCore = {
           },
           {
             "name": "lastMintTimestamp",
-            "type": "i64"
+            "type": "u64"
           }
         ]
       }
@@ -470,6 +474,11 @@ export type GameCore = {
       "code": 6004,
       "name": "Unauthorized",
       "msg": "Unauthorized"
+    },
+    {
+      "code": 6005,
+      "name": "NoResourcesToCollect",
+      "msg": "No resources to collect"
     }
   ]
 };
@@ -888,6 +897,10 @@ export const IDL: GameCore = {
           {
             "name": "lumberjacks",
             "type": "u64"
+          },
+          {
+            "name": "lastResourcesTimestamp",
+            "type": "u64"
           }
         ]
       }
@@ -903,7 +916,7 @@ export const IDL: GameCore = {
           },
           {
             "name": "lastMintTimestamp",
-            "type": "i64"
+            "type": "u64"
           }
         ]
       }
@@ -946,6 +959,11 @@ export const IDL: GameCore = {
       "code": 6004,
       "name": "Unauthorized",
       "msg": "Unauthorized"
+    },
+    {
+      "code": 6005,
+      "name": "NoResourcesToCollect",
+      "msg": "No resources to collect"
     }
   ]
 };

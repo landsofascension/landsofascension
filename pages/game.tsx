@@ -170,7 +170,7 @@ const GamePage = ({
           <div className="p-3" style={hireButtonStyles}>
             <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center font-eagle">
               <div className="flex">
-                <p className="mr-3">GWEN: </p>
+                <p className="mr-3">VALOR: </p>
                 <p className="font-sans">{balance}</p>
               </div>
               <div className="flex">
@@ -278,7 +278,7 @@ const GamePage = ({
                               {/* Lumber Amount */}
 
                               <div className="px-1">
-                                <h3 className="text-lg">GWEN</h3>
+                                <h3 className="text-lg">VALOR</h3>
                                 <h3 className="font-sans">{balance}</h3>
                               </div>
                             </div>
@@ -540,7 +540,7 @@ const GamePage = ({
 
               {player ? (
                 <>
-                  {/* GWEN */}
+                  {/* VALOR */}
 
                   <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center">
                     <div
@@ -548,7 +548,7 @@ const GamePage = ({
                       className="flex p-4 justify-evenly"
                     >
                       <div className="flex flex-col self-center">
-                        <p>GWEN</p>
+                        <p>VALOR</p>
                         <p className="font-sans">{balance}</p>
                       </div>
                     </div>
@@ -581,7 +581,10 @@ const GamePage = ({
                           className="m-2 px-6 py-3 text-base"
                           onClick={() => handleHireButtonClick("Miner")}
                         >
-                          <div className="p-0.5 text-black">Hire</div>
+                          <div className="p-0.5 text-black">
+                            Hire <br />
+                            (2 VALOR)
+                          </div>
                         </button>
                       </div>
                       <div>
@@ -636,7 +639,10 @@ const GamePage = ({
                           className="m-2 px-6 py-3 text-base"
                           onClick={() => handleHireButtonClick("Lumberjack")}
                         >
-                          <div className="p-0.5 text-black">Hire</div>
+                          <div className="p-0.5 text-black">
+                            Hire <br />
+                            (2 VALOR)
+                          </div>
                         </button>
                       </div>
                     </div>
@@ -683,7 +689,7 @@ const GamePage = ({
 
               {player ? (
                 <>
-                  {/* GWEN */}
+                  {/* VALOR */}
 
                   <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center">
                     <div
@@ -691,7 +697,7 @@ const GamePage = ({
                       className="flex p-4 justify-evenly"
                     >
                       <div className="flex flex-col self-center">
-                        <p>GWEN</p>
+                        <p>VALOR</p>
                         <p className="font-sans">{balance}</p>
                       </div>
                     </div>

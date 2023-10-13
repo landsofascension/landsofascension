@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useConnection } from "@solana/wallet-adapter-react"
-import { AnchorProvider, IdlAccounts, Program, Wallet } from "@coral-xyz/anchor"
+import {
+  AnchorProvider,
+  BN,
+  IdlAccounts,
+  Program,
+  Wallet,
+} from "@coral-xyz/anchor"
 import { GameCore, IDL } from "@/lib/types/game_core"
 import { Keypair, PublicKey } from "@solana/web3.js"
 import { toast } from "react-toastify"
@@ -66,7 +72,7 @@ export default function useGameCore(playerUserName?: string | null) {
             .amount
         )
 
-        setBalance(balance)
+        setBalance(balance / 1e9)
       } catch (e) {
         console.error(e)
       }
@@ -187,7 +193,7 @@ export default function useGameCore(playerUserName?: string | null) {
     }
   }
 
-  const handleHireButtonClick = async (item: string, amount: number = 1000) => {
+  const handleHireButtonClick = async (item: string, amount: number = 1) => {
     try {
       if (!playerUserName) throw new Error("Please, login first.")
 
