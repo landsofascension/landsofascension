@@ -583,7 +583,7 @@ const GamePage = ({
                         >
                           <div className="p-0.5 text-black">
                             Hire <br />
-                            (2 VALOR)
+                            (1 VALOR)
                           </div>
                         </button>
                       </div>
@@ -641,7 +641,7 @@ const GamePage = ({
                         >
                           <div className="p-0.5 text-black">
                             Hire <br />
-                            (2 VALOR)
+                            (1 VALOR)
                           </div>
                         </button>
                       </div>
