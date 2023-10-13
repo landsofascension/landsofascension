@@ -112,7 +112,7 @@ export default function Auth(props: Props) {
       <Image
         src="https://cdn.discordapp.com/attachments/1152274140141735936/1161823697456332880/loa_title_dark.png"
         alt="Lands of Ascension"
-        sx={{ width: ["100", "700px"], mx: ["8px", "0"] }}
+        sx={{ width: ["100", "600px"], mx: ["8px", "0"] }}
       />
       <main>
         <Flex
@@ -237,6 +237,7 @@ export default function Auth(props: Props) {
                   fontFamily: "devinne",
                   textShadow:
                     "1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black",
+                  alignItems: "center",
                 }}
               >
                 {" "}
