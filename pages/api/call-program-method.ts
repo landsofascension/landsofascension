@@ -149,7 +149,7 @@ export default async function CallProgramMethodApiHandler(
 
         return res
           .status(200)
-          .json({ message: "Tokens collected!", txId: txidCollect })
+          .json({ message: "VALOR collected!", txId: txidCollect })
 
       case "collectPlayerResources":
         const ixResources = await program.methods
@@ -222,7 +222,7 @@ export default async function CallProgramMethodApiHandler(
 
         return res
           .status(200)
-          .json({ message: "Tokens collected!", txId: txIdPurchase })
+          .json({ message: item + " hired!", txId: txIdPurchase })
       default:
         return res.status(500).json({ message: "Invalid program method" })
     }

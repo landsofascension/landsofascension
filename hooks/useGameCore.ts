@@ -67,12 +67,15 @@ export default function useGameCore(playerUserName?: string | null) {
   const fetchUserTokenBalance = useCallback(async () => {
     if (playerVaultAddress) {
       try {
-        const balance = Number(
-          (await connection.getTokenAccountBalance(playerVaultAddress)).value
-            .amount
-        )
+        const balance =
+          Number(
+            (await connection.getTokenAccountBalance(playerVaultAddress)).value
+              .amount
+          ) / 1e9
 
-        setBalance(balance / 1e9)
+        setBalance(balance)
+
+        return balance
       } catch (e) {
         console.error(e)
       }
@@ -97,6 +100,8 @@ export default function useGameCore(playerUserName?: string | null) {
       try {
         const player = await program.account.player.fetch(playerAddress)
         setPlayer(player)
+
+        return player
       } catch (e) {
         setPlayer(false)
         console.error(e)
@@ -151,6 +156,7 @@ export default function useGameCore(playerUserName?: string | null) {
       toast(message, { type: "success" })
     } catch (e) {
       console.error(e)
+      toast(e + "", { type: "error" })
     } finally {
       fetchUserTokenBalance()
       fetchUserPalace()
@@ -170,6 +176,7 @@ export default function useGameCore(playerUserName?: string | null) {
       toast(message, { type: "success" })
     } catch (e) {
       console.error(e)
+      toast(e + "", { type: "error" })
     } finally {
       fetchPlayerAccount()
     }
@@ -186,6 +193,7 @@ export default function useGameCore(playerUserName?: string | null) {
       toast(message, { type: "success" })
     } catch (e) {
       console.error(e)
+      toast(e + "", { type: "error" })
     } finally {
       fetchUserTokenBalance()
       fetchUserPalace()
@@ -196,6 +204,13 @@ export default function useGameCore(playerUserName?: string | null) {
   const handleHireButtonClick = async (item: string, amount: number = 1) => {
     try {
       if (!playerUserName) throw new Error("Please, login first.")
+
+      const balance = await fetchUserTokenBalance()
+
+      // check player tokens
+      if (!balance || balance < 1) {
+        throw new Error("You don't have enough VALOR.")
+      }
 
       const { message, txId } = await callProgramMethod(
         "purchaseMerchantItem",
@@ -209,6 +224,7 @@ export default function useGameCore(playerUserName?: string | null) {
       toast(message, { type: "success" })
     } catch (e) {
       console.error(e)
+      toast(e + "", { type: "error" })
     } finally {
       fetchUserTokenBalance()
       fetchUserPalace()
