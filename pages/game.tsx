@@ -40,7 +40,7 @@ const GamePage = ({
   } = useGameCore(username)
 
   // Palace Modal state variables
-  const [isPalaceModalOpen, setIsPalaceModalOpen] = React.useState(true)
+  const [isPalaceModalOpen, setIsPalaceModalOpen] = React.useState(false)
   const openPalaceModal = () => {
     setIsPalaceModalOpen(true)
   }
@@ -157,35 +157,53 @@ const GamePage = ({
         openMerchantModal={openMerchantModal}
       />{" "}
       {/* Login Button */}
-      <div
-        className="align-top justify-end absolute top-10"
-        sx={{
-          zIndex: 10,
-          margin: "0 auto",
-        }}
-      >
+      <div className="align-top justify-end absolute left-4 top-4">
         {authorized === false ? (
-          <Link href="/auth">
-            <Button>Login</Button>
-          </Link>
+          <Button
+            sx={{
+              width: ["156px", "156px"],
+              height: ["60px", "60px"],
+              backgroundColor: "transparent",
+              mb: ["0px", "16px"],
+            }}
+          >
+            <Link
+              sx={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+              href="/auth"
+            >
+              <img
+                src="https://cdn.discordapp.com/attachments/1152274140141735936/1162473411809902702/login_button.png"
+                alt="Login"
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            </Link>
+          </Button>
         ) : null}
       </div>
       {/* Resource HUD */}
-      <div className="align-top justify-end absolute left-4 top-4">
+      <div className="align-top justify-end absolute bottom-1 lg:left-5 lg:top-16 mt-3">
         {player !== false ? (
           <div className="p-3" style={hireButtonStyles}>
             <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center font-eagle">
               <div className="flex">
-                <p className="mr-3">VALOR: </p>
+                <p className="mr-3">GWEN: </p>
                 <p className="font-sans">{balance}</p>
               </div>
               <div className="flex">
                 <p className="mr-3">Gold: </p>
-                <p className="font-sans">{player?.gold.toNumber()}</p>
+                <p className="font-sans">{player?.gold.toNumber() || 0}</p>
               </div>
               <div className="flex">
                 <p className="mr-3">Lumber: </p>
-                <p className="font-sans">{player?.lumber.toNumber()}</p>
+                <p className="font-sans">{player?.lumber.toNumber() || 0}</p>
               </div>
             </div>
           </div>
@@ -284,7 +302,7 @@ const GamePage = ({
                               {/* Lumber Amount */}
 
                               <div className="px-1">
-                                <h3 className="text-lg">VALOR</h3>
+                                <h3 className="text-lg">GWEN</h3>
                                 <h3 className="font-sans">{balance}</h3>
                               </div>
                             </div>
@@ -546,7 +564,7 @@ const GamePage = ({
 
               {player ? (
                 <>
-                  {/* VALOR */}
+                  {/* GWEN */}
 
                   <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center">
                     <div
@@ -554,7 +572,7 @@ const GamePage = ({
                       className="flex p-4 justify-evenly"
                     >
                       <div className="flex flex-col self-center">
-                        <p>VALOR</p>
+                        <p>GWEN</p>
                         <p className="font-sans">{balance}</p>
                       </div>
                     </div>
@@ -587,10 +605,7 @@ const GamePage = ({
                           className="m-2 px-6 py-3 text-base"
                           onClick={() => handleHireButtonClick("Miner")}
                         >
-                          <div className="p-0.5 text-black">
-                            Hire <br />
-                            (1 VALOR)
-                          </div>
+                          <div className="p-0.5 text-black">Hire</div>
                         </button>
                       </div>
                       <div>
@@ -645,10 +660,7 @@ const GamePage = ({
                           className="m-2 px-6 py-3 text-base"
                           onClick={() => handleHireButtonClick("Lumberjack")}
                         >
-                          <div className="p-0.5 text-black">
-                            Hire <br />
-                            (1 VALOR)
-                          </div>
+                          <div className="p-0.5 text-black">Hire</div>
                         </button>
                       </div>
                     </div>
@@ -695,7 +707,7 @@ const GamePage = ({
 
               {player ? (
                 <>
-                  {/* VALOR */}
+                  {/* GWEN */}
 
                   <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center">
                     <div
@@ -703,7 +715,7 @@ const GamePage = ({
                       className="flex p-4 justify-evenly"
                     >
                       <div className="flex flex-col self-center">
-                        <p>VALOR</p>
+                        <p>GWEN</p>
                         <p className="font-sans">{balance}</p>
                       </div>
                     </div>

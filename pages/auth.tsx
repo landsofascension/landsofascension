@@ -5,7 +5,7 @@ import dynamic from "next/dynamic"
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs"
 import "react-tabs/style/react-tabs.css"
 import { toast } from "react-toastify"
-import { Button, Flex, Heading, Input, Label, Text } from "theme-ui"
+import { Button, Flex, Heading, Input, Label, Text, Image } from "theme-ui"
 import { useRouter } from "next/router"
 import { getInitialAuthProps } from "@/utils/auth"
 import useAuthorization from "@/hooks/useAuthorization"
@@ -94,73 +94,220 @@ export default function Auth(props: Props) {
   }
 
   return (
-    <main>
-      <Heading>Auth</Heading>
-      <Text>Sign up or login to start your adventure</Text>
-      isLoggedIn:{" "}
-      {authorized === null ? "loading..." : JSON.stringify(authorized)}
-      {authorized && (
-        <Button
-          onClick={async () => {
-            // remove cookie
-            await fetch("/api/logout")
-            reload()
+    <Flex
+      sx={{
+        flexDirection: "column",
+        alignItems: ["center"],
+        justifyContent: ["start", "center"],
+        height: "100vh",
+        width: "100vw",
+        backgroundImage:
+          'url("https://cdn.discordapp.com/attachments/1152274140141735936/1161472438501113886/bg-loa.jpg")',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        overflow: "auto",
+      }}
+    >
+      <Image
+        src="https://cdn.discordapp.com/attachments/1152274140141735936/1161823697456332880/loa_title_dark.png"
+        alt="Lands of Ascension"
+        sx={{ width: ["100", "700px"], mx: ["8px", "0"] }}
+      />
+      <main>
+        <Flex
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            backgroundImage:
+              "url(https://cdn.discordapp.com/attachments/1152274140141735936/1162485742438719568/dark_box.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            padding: "16px",
+            border: "3px solid #615819",
+            borderRadius: "10px",
+            maxWidth: "90vw",
           }}
         >
-          Logout
-        </Button>
-      )}
-      <Tabs
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          width: "390px",
-        }}
-      >
-        <TabList>
-          <Tab>Login</Tab>
-          <Tab>Sign Up</Tab>
-        </TabList>
-
-        <TabPanel>
-          <Heading>Login</Heading>
           <Flex
             sx={{
               flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundImage:
+                "url(https://cdn.discordapp.com/attachments/1152274140141735936/1162405178545287208/no_border_sidebox.png)",
+
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              padding: "16px",
+              border: "3px solid #615819",
+              borderRadius: "10px",
+              mb: "16px",
             }}
           >
-            {" "}
-            <form
-              onSubmit={handleLogin}
+            <Text
               sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "16px",
-                width: "300px",
+                color: "#615819",
+                fontSize: ["24px", "32px"],
+                fontWeight: "bold",
+                textShadow:
+                  "1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black",
+                fontFamily: "devinne",
+                textAlign: "center",
               }}
             >
-              <Label>
-                Username
-                <Input type="text" name="username" placeholder="username" />
-              </Label>
-
-              <Label>
-                Password
-                <Input type="password" name="password" placeholder="password" />
-              </Label>
-              <Flex
+              Sign up or login and Ascend!!
+            </Text>
+            <Text
+              sx={{
+                color: "#615819",
+                backgroundColor: "rgb(0,0,0,0.7)",
+                fontSize: ["16px", "24px"],
+                fontWeight: "bold",
+                borderRadius: "10px",
+                p: "8px",
+              }}
+            >
+              You are {authorized ? "logged in" : "logged out"}.
+            </Text>
+            {authorized === null ? "Loading..." : ""}
+            {authorized && (
+              <Button
                 sx={{
-                  gap: "16px",
-                  alignItems: "center",
-                  "> button": {
-                    flex: 1,
-                  },
+                  width: ["163px", "163px"],
+                  height: ["61px", "61px"],
+                  backgroundColor: "transparent",
+                  mb: ["0px", "16px"],
+                }}
+                onClick={async () => {
+                  // remove cookie
+                  await fetch("/api/logout")
+                  reload()
                 }}
               >
-                <Button type="submit">Login</Button>
-              </Flex>
-            </form>
-            {/* <Text mt="8px">Or:</Text>
+                <Image
+                  src="https://cdn.discordapp.com/attachments/1152274140141735936/1162481368207470683/logout_button.png"
+                  alt="Logout"
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              </Button>
+            )}
+          </Flex>
+          <Tabs
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              width: "390px",
+              alignItems: "center",
+              fontFamily: "devinne",
+              fontSize: "24px",
+              fontWeight: "bold",
+            }}
+          >
+            <TabList>
+              <Tab>Login</Tab>
+              <Tab>Sign Up</Tab>
+            </TabList>
+
+            <TabPanel>
+              <Heading
+                sx={{
+                  color: "#615819",
+                  fontWeight: "bold",
+                  fontFamily: "devinne",
+                  fontSize: "48px",
+                  textAlign: "center",
+                  textShadow:
+                    "1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black",
+                }}
+              >
+                Login
+              </Heading>
+              <Flex
+                sx={{
+                  flexDirection: "column",
+
+                  color: "#615819",
+                  fontWeight: "bold",
+                  fontFamily: "devinne",
+                  textShadow:
+                    "1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black",
+                }}
+              >
+                {" "}
+                <form
+                  onSubmit={handleLogin}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "16px",
+                    width: "300px",
+                  }}
+                >
+                  <Label
+                    sx={{
+                      fontSize: "24px",
+                    }}
+                  >
+                    Username
+                    <Input
+                      sx={{
+                        fontSize: "16px",
+                      }}
+                      type="text"
+                      name="username"
+                      placeholder="Username"
+                    />
+                  </Label>
+
+                  <Label
+                    sx={{
+                      fontSize: "24px",
+                    }}
+                  >
+                    Password
+                    <Input
+                      sx={{
+                        fontSize: "16px",
+                      }}
+                      type="password"
+                      name="password"
+                      placeholder="Password"
+                    />
+                  </Label>
+                  <Flex
+                    sx={{
+                      gap: "16px",
+                      alignItems: "center",
+                      "> button": {
+                        flex: 1,
+                      },
+                    }}
+                  >
+                    <Button
+                      sx={{
+                        backgroundColor: "transparent",
+                        mb: ["0px", "16px"],
+                      }}
+                      type="submit"
+                    >
+                      <Image
+                        src="https://cdn.discordapp.com/attachments/1152274140141735936/1162473411809902702/login_button.png"
+                        alt="Login"
+                        sx={{
+                          width: "50%",
+                          height: "50%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </Button>
+                  </Flex>
+                </form>
+                {/* <Text mt="8px">Or:</Text>
             <div>
               {!publicKey ? (
                 <WalletMultiButtonDynamic
@@ -179,48 +326,103 @@ export default function Auth(props: Props) {
                 />
               )}
             </div> */}
-          </Flex>
-        </TabPanel>
-        <TabPanel>
-          <Heading>Sign up</Heading>
-
-          <Flex
-            sx={{
-              flexDirection: "column",
-            }}
-          >
-            {" "}
-            <form
-              onSubmit={handleSignUp}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "16px",
-                width: "300px",
-              }}
-            >
-              <Label>
-                Username
-                <Input type="text" name="username" placeholder="username" />
-              </Label>
-
-              <Label>
-                Password
-                <Input type="password" name="password" placeholder="password" />
-              </Label>
-              <Flex
+              </Flex>
+            </TabPanel>
+            <TabPanel>
+              <Heading
                 sx={{
-                  gap: "16px",
-                  alignItems: "center",
-                  "> button": {
-                    flex: 1,
-                  },
+                  color: "#615819",
+                  fontWeight: "bold",
+                  fontFamily: "devinne",
+                  fontSize: "48px",
+                  textAlign: "center",
+                  textShadow:
+                    "1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black",
                 }}
               >
-                <Button type="submit">Sign Up</Button>
-              </Flex>
-            </form>
-            {/* <Text mt="8px">Or:</Text>
+                Sign up
+              </Heading>
+
+              <Flex
+                sx={{
+                  flexDirection: "column",
+                  color: "#615819",
+                  fontWeight: "bold",
+                  fontFamily: "devinne",
+                  textShadow:
+                    "1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black",
+                }}
+              >
+                {" "}
+                <form
+                  onSubmit={handleSignUp}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "16px",
+                    width: "300px",
+                  }}
+                >
+                  <Label
+                    sx={{
+                      fontSize: "24px",
+                    }}
+                  >
+                    Username
+                    <Input
+                      sx={{
+                        fontSize: "16px",
+                      }}
+                      type="text"
+                      name="username"
+                      placeholder="Username"
+                    />
+                  </Label>
+
+                  <Label
+                    sx={{
+                      fontSize: "24px",
+                    }}
+                  >
+                    Password
+                    <Input
+                      sx={{
+                        fontSize: "16px",
+                      }}
+                      type="password"
+                      name="password"
+                      placeholder="Password"
+                    />
+                  </Label>
+                  <Flex
+                    sx={{
+                      gap: "16px",
+                      alignItems: "center",
+                      "> button": {
+                        flex: 1,
+                      },
+                    }}
+                  >
+                    <Button
+                      sx={{
+                        backgroundColor: "transparent",
+                        mb: ["0px", "16px"],
+                      }}
+                      type="submit"
+                    >
+                      <Image
+                        src="https://cdn.discordapp.com/attachments/1152274140141735936/1162489014545289408/signup_button.png"
+                        alt="Login"
+                        sx={{
+                          width: "50%",
+                          height: "50%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </Button>
+                  </Flex>
+                </form>
+                {/* <Text mt="8px">Or:</Text>
             <div>
               {!publicKey ? (
                 <WalletMultiButtonDynamic
@@ -239,10 +441,12 @@ export default function Auth(props: Props) {
                 />
               )}
             </div> */}
-          </Flex>
-        </TabPanel>
-      </Tabs>
-    </main>
+              </Flex>
+            </TabPanel>
+          </Tabs>
+        </Flex>
+      </main>
+    </Flex>
   )
 }
 

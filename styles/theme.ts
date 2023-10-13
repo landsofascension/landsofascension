@@ -33,7 +33,7 @@ export const theme: Theme = {
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
-        margin: "96px 0",
+        margin: "32px 0",
       },
 
       "& label": {
