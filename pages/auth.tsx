@@ -351,6 +351,7 @@ export default function Auth(props: Props) {
                   color: "#615819",
                   fontWeight: "bold",
                   fontFamily: "devinne",
+                  alignItems: "center",
                   textShadow:
                     "1px 1px 0 black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black",
                 }}

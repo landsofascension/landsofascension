@@ -157,36 +157,38 @@ const GamePage = ({
         openMerchantModal={openMerchantModal}
       />{" "}
       {/* Login Button */}
-      <div className="align-top justify-end absolute left-4 top-4">
-        {authorized === false ? (
-          <Button
+      <div className="align-top justify-end absolute left-4 top-4 items-center">
+        <Button
+          sx={{
+            width: ["156px", "156px"],
+            height: ["60px", "60px"],
+            backgroundColor: "transparent",
+            mb: ["0px", "16px"],
+          }}
+        >
+          <Link
             sx={{
-              width: ["156px", "156px"],
-              height: ["60px", "60px"],
-              backgroundColor: "transparent",
-              mb: ["0px", "16px"],
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
             }}
+            href="/auth"
           >
-            <Link
+            <img
+              src={
+                authorized
+                  ? "https://cdn.discordapp.com/attachments/1152274140141735936/1162481368207470683/logout_button.png"
+                  : "https://cdn.discordapp.com/attachments/1152274140141735936/1162473411809902702/login_button.png"
+              }
+              alt="Login"
               sx={{
                 width: "100%",
                 height: "100%",
                 objectFit: "cover",
               }}
-              href="/auth"
-            >
-              <img
-                src="https://cdn.discordapp.com/attachments/1152274140141735936/1162473411809902702/login_button.png"
-                alt="Login"
-                sx={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
-              />
-            </Link>
-          </Button>
-        ) : null}
+            />
+          </Link>
+        </Button>
       </div>
       {/* Resource HUD */}
       <div className="align-top justify-end absolute bottom-1 lg:left-5 lg:top-16 mt-3">
@@ -194,8 +196,9 @@ const GamePage = ({
           <div className="p-3" style={hireButtonStyles}>
             <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center font-eagle">
               <div className="flex">
-                <p className="mr-3">GWEN: </p>
-                <p className="font-sans">{balance}</p>
+                <p className="mr-3">VALOR: </p>
+                {/* Display balance but only to the second decimal point*/}
+                <p className="font-sans">{balance.toFixed(2)}</p>
               </div>
               <div className="flex">
                 <p className="mr-3">Gold: </p>
@@ -302,8 +305,10 @@ const GamePage = ({
                               {/* Lumber Amount */}
 
                               <div className="px-1">
-                                <h3 className="text-lg">GWEN</h3>
-                                <h3 className="font-sans">{balance}</h3>
+                                <h3 className="text-lg">VALOR</h3>
+                                <h3 className="font-sans">
+                                  {balance.toFixed(2)}
+                                </h3>
                               </div>
                             </div>
                             <div>
@@ -564,7 +569,7 @@ const GamePage = ({
 
               {player ? (
                 <>
-                  {/* GWEN */}
+                  {/* VALOR */}
 
                   <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center">
                     <div
@@ -572,8 +577,8 @@ const GamePage = ({
                       className="flex p-4 justify-evenly"
                     >
                       <div className="flex flex-col self-center">
-                        <p>GWEN</p>
-                        <p className="font-sans">{balance}</p>
+                        <p>VALOR</p>
+                        <p className="font-sans">{balance.toFixed(2)}</p>
                       </div>
                     </div>
                   </div>
@@ -707,7 +712,7 @@ const GamePage = ({
 
               {player ? (
                 <>
-                  {/* GWEN */}
+                  {/* VALOR */}
 
                   <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center">
                     <div
@@ -715,8 +720,8 @@ const GamePage = ({
                       className="flex p-4 justify-evenly"
                     >
                       <div className="flex flex-col self-center">
-                        <p>GWEN</p>
-                        <p className="font-sans">{balance}</p>
+                        <p>VALOR</p>
+                        <p className="font-sans">{balance.toFixed(2)}</p>
                       </div>
                     </div>
                   </div>
