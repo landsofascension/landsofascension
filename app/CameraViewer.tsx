@@ -1,8 +1,8 @@
 import React, { useState } from "react"
 
 const containerStyle: React.CSSProperties = {
-  width: "100vw",
-  height: "100vh",
+  width: "1280px",
+  height: "1280px",
   overflow: "hidden",
   position: "relative",
   userSelect: "none",
@@ -16,8 +16,8 @@ const cameraStyle: React.CSSProperties = {
 }
 
 const imageStyle: React.CSSProperties = {
-  width: "2048px",
-  height: "2048px",
+  width: "1280px",
+  height: "1280px",
   maxWidth: "none",
   objectFit: "contain",
   userSelect: "none",
@@ -57,12 +57,14 @@ const CameraViewer: React.FC<CameraViewerProps> = ({
 
       setCameraPosition((prevPosition) => {
         const newX = Math.min(
-          0,
-          Math.max(prevPosition.x + deltaX, -2048 + window.innerWidth)
+          (1280 - window.innerWidth) / 2 > 0
+            ? (1280 - window.innerWidth) / 2
+            : 0,
+          Math.max(prevPosition.x + deltaX, (-1280 + window.innerWidth) / 2) // divided by two because the map is in the center of the screen
         )
         const newY = Math.min(
           0,
-          Math.max(prevPosition.y + deltaY, -2048 + window.innerHeight)
+          Math.max(prevPosition.y + deltaY, -1280 + window.innerHeight)
         )
         return {
           x: newX,
@@ -91,12 +93,14 @@ const CameraViewer: React.FC<CameraViewerProps> = ({
 
       setCameraPosition((prevPosition) => {
         const newX = Math.min(
-          0,
-          Math.max(prevPosition.x + deltaX, -2048 + window.innerWidth)
+          (1280 - window.innerWidth) / 2 > 0
+            ? (1280 - window.innerWidth) / 2
+            : 0,
+          Math.max(prevPosition.x + deltaX, (-1280 + window.innerWidth) / 2) // divided by two because the map is in the center of the screen
         )
         const newY = Math.min(
           0,
-          Math.max(prevPosition.y + deltaY, -2048 + window.innerHeight)
+          Math.max(prevPosition.y + deltaY, -1280 + window.innerHeight)
         )
         return {
           x: newX,
@@ -131,10 +135,10 @@ const CameraViewer: React.FC<CameraViewerProps> = ({
         <span
           sx={{
             position: "absolute",
-            top: 550,
-            left: 830,
-            width: "596px",
-            height: "596px",
+            top: "30%",
+            left: "40%",
+            width: "386px",
+            height: "356px",
             borderRadius: "15%",
             background: "rgb(0 0 0 / 15%)",
             zIndex: 1,
@@ -149,10 +153,10 @@ const CameraViewer: React.FC<CameraViewerProps> = ({
         <span
           sx={{
             position: "absolute",
-            top: 1,
-            left: 330,
-            width: "196px",
-            height: "196px",
+            top: "1%",
+            left: "15%",
+            width: "146px",
+            height: "126px",
             borderRadius: "15%",
             background: "rgb(0 0 0 / 15%)",
             zIndex: 1,
@@ -167,10 +171,10 @@ const CameraViewer: React.FC<CameraViewerProps> = ({
         <span
           sx={{
             position: "absolute",
-            top: 1,
-            left: 1860,
-            width: "166px",
-            height: "166px",
+            top: "1%",
+            right: "1%",
+            width: "146px",
+            height: "113px",
             borderRadius: "15%",
             background: "rgb(0 0 0 / 15%)",
             zIndex: 1,
@@ -185,10 +189,10 @@ const CameraViewer: React.FC<CameraViewerProps> = ({
         <span
           sx={{
             position: "absolute",
-            top: 1520,
-            left: 1570,
-            width: "424px",
-            height: "296px",
+            bottom: "11%",
+            right: "5%",
+            width: "234px",
+            height: "166px",
             borderRadius: "15%",
             background: "rgb(0 0 0 / 15%)",
             zIndex: 1,
@@ -203,10 +207,10 @@ const CameraViewer: React.FC<CameraViewerProps> = ({
         <span
           sx={{
             position: "absolute",
-            top: 1730,
-            left: 175,
-            width: "372px",
-            height: "272px",
+            bottom: "3%",
+            left: "9%",
+            width: "232px",
+            height: "162px",
             borderRadius: "15%",
             background: "rgb(0 0 0 / 15%)",
             zIndex: 1,
