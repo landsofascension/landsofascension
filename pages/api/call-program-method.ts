@@ -13,6 +13,7 @@ import {
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes"
 import { Connection, Keypair, PublicKey } from "@solana/web3.js"
 import { kv } from "@vercel/kv"
+import { verify } from "jsonwebtoken"
 import { NextApiRequest, NextApiResponse } from "next"
 
 export type SignUpPlayerData = {
@@ -73,6 +74,18 @@ export default async function CallProgramMethodApiHandler(
         | CollectPalaceTokensData
         | PurchaseMerchantItemData
     } = req.body
+
+    const token = req.cookies.authToken
+
+    if (!token) throw new Error("No auth token found. Please login again.")
+
+    const decoded = verify(token, process.env.JWT_SECRET as string) as {
+      username: string
+    }
+
+    if (!decoded) {
+      return res.status(400).json({ message: "Unauthorized" })
+    }
 
     const playerAddress = PublicKey.findProgramAddressSync(
       [Buffer.from("player"), Buffer.from(username)],
