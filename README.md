@@ -1,7 +1,8 @@
 # landsofascension
 
-Frontend repo for the Lands of Ascension game.
+Frontend repository for the Lands of Ascension game.
 
+_This project handles mostly authentication, authorization & UI. All game logic is under the [on-chain program](https://github.com/landsofascension/game-core)_
 
 ## Development
 
