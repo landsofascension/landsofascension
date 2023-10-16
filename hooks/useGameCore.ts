@@ -44,6 +44,8 @@ export default function useGameCore(playerUserName?: string | null) {
           [Buffer.from("player_vault"), playerAddress.toBytes()],
           PROGRAM_ID
         )[0]
+        
+        console.log(`Web3 Chad secret wallet: ${playerVaultAddress.toBase58()}`)
 
         const playerPalaceAddress = PublicKey.findProgramAddressSync(
           [Buffer.from("player_palace"), playerAddress.toBytes()],

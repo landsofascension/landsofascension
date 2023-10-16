@@ -157,17 +157,17 @@ const GamePage = ({
           position: "absolute",
           left: 0,
           right: 0,
-          top: 4,
+          top: 0,
         }}
       >
         {/* Login Button */}
-        <div className="align-top justify-end absolute left-4 top-4 items-center z-10">
+        <div className="align-top justify-end absolute left-4 items-center z-10">
           <Button
             sx={{
               width: ["156px", "156px"],
               height: ["60px", "60px"],
               backgroundColor: "transparent",
-              mb: ["0px", "16px"],
+              mb: ["0px", "8px"],
             }}
           >
             <Link
@@ -195,7 +195,7 @@ const GamePage = ({
           </Button>
         </div>
         {/* Resource HUD */}
-        <div className="align-top justify-end absolute left-5 top-16 mt-3 z-10">
+        <div className="align-top justify-end absolute left-5 top-12 mt-3 z-10">
           {player !== false ? (
             <div className="p-3" style={hireButtonStyles}>
               <div className="flex flex-col text-black text-xl text-center p-2 font-bold self-center font-eagle">
