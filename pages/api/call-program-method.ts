@@ -77,14 +77,19 @@ export default async function CallProgramMethodApiHandler(
 
     const token = req.cookies.authToken
 
-    if (!token) throw new Error("No auth token found. Please login again.")
+    // check token only outside of signup
+    if (!token && method == "signUpPlayer")
+      throw new Error("No auth token found. Please login again.")
 
-    const decoded = verify(token, process.env.JWT_SECRET as string) as {
-      username: string
-    }
+    // check token only outside of signup
+    if (token && method !== "signUpPlayer") {
+      const decoded = verify(token, process.env.JWT_SECRET as string) as {
+        username: string
+      }
 
-    if (!decoded) {
-      return res.status(400).json({ message: "Unauthorized" })
+      if (!decoded) {
+        return res.status(400).json({ message: "Unauthorized" })
+      }
     }
 
     const playerAddress = PublicKey.findProgramAddressSync(
