@@ -78,7 +78,7 @@ export default async function CallProgramMethodApiHandler(
     const token = req.cookies.authToken
 
     // check token only outside of signup
-    if (!token && method == "signUpPlayer")
+    if (!token && method !== "signUpPlayer")
       throw new Error("No auth token found. Please login again.")
 
     // check token only outside of signup
